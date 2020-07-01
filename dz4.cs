@@ -24,7 +24,7 @@ namespace dz1
             Console.WriteLine("\nВведите новую цену:");
             int discountPrice = Convert.ToInt32(Console.ReadLine());
             int crystal = gold / discountPrice;
-            gold = gold % discountPrice;
+            gold %=discountPrice;
 
             Console.WriteLine($"\n-Хорошо, хорошо, только перестань, для тебя 1 кристалл стоит {discountPrice} золотых. - сдается под вашим напором кассир." +
                 $"\n\nОткрыленные своим успехов вы покупаете на все ваши деньги криссталлы!" +
