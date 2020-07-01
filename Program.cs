@@ -9,10 +9,10 @@ namespace dz1
 
             int pictures = 52;
             int picturesInRow = 3;
-            int picturesAllRow = pictures / picturesInRow;
+            int allPicturesInRow = pictures / picturesInRow;
             int picturesOutRow = pictures % picturesInRow;
 
-            Console.WriteLine($"Всего картин - {pictures}. \nПолностью заполненных рядов картин получилось - {int picturesAllRow}. " +
+            Console.WriteLine($"Всего картин - {pictures}. \nПолностью заполненных рядов картин получилось - {allPicturesInRow}. " +
                 $"\nОстаток картин - {picturesOutRow}.");
             Console.ReadKey();
         }
