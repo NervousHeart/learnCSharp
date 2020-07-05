@@ -14,7 +14,6 @@ namespace dz1
             int spellpreparation = 100;
             int spellPunchStaff = 150;
             Random rand = new Random();
-            Random strike = new Random();
 
             do
             {
