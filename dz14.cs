@@ -18,17 +18,19 @@ namespace dz1
             do
             {
 
-                int damageBoss = rand.Next(150, 200);
+                int damageBoss = rand.Next(200, 250);
                 int spellForceTroll = rand.Next(400, 600);
-                int spellHeal = rand.Next(250, 300);
+                int spellHeal = rand.Next(150, 300);
                 int spellGreatBoom = rand.Next(600, 1500);
                 int spell = rand.Next(1, 4);
+                int spellShield = rand.Next(100, 200);
 
 
                 if (hpMage < 200)
                 {
                     hpMage += spellHeal;
-                    Console.WriteLine($"Маг лечит себя на {spellHeal} жизней");
+                    Console.WriteLine($"Маг закрывает себя магическим щитом на {spellShield} и лечит себя на {spellHeal} жизней");
+                    damageBoss -= spellShield;
                 }
                 else
                 {
