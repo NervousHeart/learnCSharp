@@ -10,8 +10,8 @@ namespace dz1
         {
             int hpMage = 1000;
             int hpBoss = 3000;
-            bool flag = false;
-            int spellpreparation = 100;
+            bool preparationBigBoom = false;
+            int spellPreparation = 100;
             int spellPunchStaff = 150;
             Random rand = new Random();
 
@@ -39,19 +39,19 @@ namespace dz1
                         hpBoss -= spellForceTroll;
                         Console.WriteLine($"Маг использует силу Тролля! И наносит боссу {spellForceTroll} урона");
                     }
-                    else if (spell == 2 && flag == false)
+                    else if (spell == 2 && preparationBigBoom == false)
                     {
-                        hpMage -= spellpreparation;
-                        flag = true;
-                        Console.WriteLine($"Маг готовит заклинание! И жертвует {spellpreparation} очков своей жизни");
+                        hpMage -= spellPreparation;
+                        preparationBigBoom = true;
+                        Console.WriteLine($"Маг готовит заклинание! И жертвует {spellPreparation} очков своей жизни");
                     }
-                    else if (spell == 3 && flag == true)
+                    else if (spell == 3 && preparationBigBoom == true)
                     {
                         hpBoss -= spellGreatBoom;
-                        flag = false;
+                        preparationBigBoom = false;
                         Console.WriteLine($"Маг кастует огромный взрыв! И наносит {spellGreatBoom} урона боссу!");
                     }
-                    else if (spell == 2 && flag == true)
+                    else if (spell == 2 && preparationBigBoom == true)
                     {
                         hpBoss -= spellPunchStaff;
                         Console.WriteLine($"Маг не успевает применить заклинание взрыва и поэтому бьет босса посохом на {spellPunchStaff} урона");
