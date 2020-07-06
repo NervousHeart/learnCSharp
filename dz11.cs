@@ -7,11 +7,9 @@ namespace dz1
     {
         static void Main(string[] args)
         {
-            int number = 7;
-            while (number <= 98) // Здесь был выбран цикл while потому что известно конечное число последовательности и ее шаг. 
+            for (int i=7;i <= 98; i+=7) // Здесь был выбран цикл for потому что известно конечное число последовательности и ее шаг. 
             {
-                Console.Write(number + " ");
-                number += 7;
+                Console.Write(i + " ");
             }
         }
     }
