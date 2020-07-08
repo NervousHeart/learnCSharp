@@ -9,7 +9,6 @@ namespace dz17
         static void Main(string[] args)
         {
             int[] array = new int[30];
-            int localMax;
             Random rand = new Random();
             for (int i = 0; i < array.Length; i++)
             {
