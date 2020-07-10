@@ -26,14 +26,12 @@ namespace ConsoleApp6111
                     multiplicationOneColumn *= array[i, 0];
             }
             
-                for (int i = 1; i < 2; i++)
-                {
-                    for (int j = 0; j< array.GetLength(1);j++)
-                    {
-                        sumSecondRow+= array[i,j];
-                    }
-                }
-            
+
+               for (int j = 0; j< array.GetLength(1);j++)
+            {
+                   sumSecondRow+= array[1,j];
+            }
+
                 Console.WriteLine("произведение первого столбца: " + multiplicationOneColumn);
                 Console.WriteLine("сумма второй строки: " + sumSecondRow);
 
