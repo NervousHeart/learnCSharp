@@ -1,19 +1,22 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Xml.Serialization;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace dz17
+namespace ConsoleApp1
 {
-    class dz20
+    class Program
     {
         static void Main(string[] args)
         {
-            DrawBar(60, 100, 5, 5, ConsoleColor.Red);
+            DrawBar(40, 5, 5, ConsoleColor.Red);
+            Console.ReadKey();
         }
-        static void DrawBar(int value, int maxValue, int positionX, int positionY, ConsoleColor color)
+        static void DrawBar(int value, int positionX, int positionY, ConsoleColor color)
         {
             int maxBar = 10;
-            int nowBar = value / (maxValue / 10);
+            int nowBar = value / 10;
 
 
             ConsoleColor defoultColor = Console.BackgroundColor;
@@ -34,9 +37,8 @@ namespace dz17
             {
                 bar += "_";
             }
-            Console.Write(bar+"]");
+            Console.Write(bar + "]");
 
         }
-
     }
 }
