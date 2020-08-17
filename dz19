@@ -18,7 +18,7 @@ namespace ConsoleApp1
             while (progWork)
             {
 
-            Console.WriteLine("1. - Добавить досье \n2. - Вывести все досье \n3. - Удалить досье \n4. - Поиск по фамилии \n5. - Выход  ");
+            Console.WriteLine("\n1. - Добавить досье \n2. - Вывести все досье \n3. - Удалить досье \n4. - Поиск по фамилии \n5. - Выход  ");
 
             int userInPut = Convert.ToInt32(Console.ReadLine());
 
@@ -134,7 +134,7 @@ namespace ConsoleApp1
         {
             for (int i = 0; i < nameWorker.Length; i++)
             {
-            Console.WriteLine($"Досье номер {i+1}: ФИО: {nameWorker[i]}   Должность: {postWorker[i]}");
+            Console.Write($"Досье номер {i+1}: ФИО: {nameWorker[i]}   Должность: {postWorker[i]}  -  ");
             }
         }
 
