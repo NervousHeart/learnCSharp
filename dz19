@@ -4,165 +4,115 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp1
+namespace dz19
 {
     class Program
     {
         static void Main(string[] args)
         {
-
             bool progWork = true;
             string[] nameWorker = new string[0];
-            string[] postWorker= new string[0];
+            string[] postWorker = new string[0];
 
             while (progWork)
             {
+                Console.WriteLine("1 - Добавить досье\n2 - Вывести все досье\n3 - Удалить досье\n4 - Поиск по фамилии\n5 - Выход");
+                string userInput =(Console.ReadLine());
 
-            Console.WriteLine("\n1. - Добавить досье \n2. - Вывести все досье \n3. - Удалить досье \n4. - Поиск по фамилии \n5. - Выход  ");
-
-            int userInPut = Convert.ToInt32(Console.ReadLine());
-
-
-            switch (userInPut)
-            {
-                case 1:
-                        CreateDossier(ref nameWorker,ref postWorker);
-                    break;
-
-                case 2:
-                    if (nameWorker.Length==0)
-                        {
-                            Console.WriteLine("Нет досье"); 
-                        }
-                    else
-                        {
-                            ShowDossier(ref nameWorker, ref postWorker);
-                        }
-                        break;
-                case 3:
-                    if (nameWorker.Length == 0)
-                        {
-                            Console.WriteLine("Нет досье");
-                        }
-                        else
-                        {
-                            Delete(ref nameWorker, ref postWorker);
-                        }
-                        break;
-                case 4:
-                    if (nameWorker.Length == 0)
-                        {
-                            Console.WriteLine("Нет досье");
-                        }
-                        else
-                        {
-                            FoundName(ref nameWorker, ref postWorker);
-                        }
-                        break;
-                case 5:
-                    progWork = false;
-                        break;
-                default:
-                    Console.WriteLine("Неизвестная команда");
-                        break;
-            }
-            }
-                Console.Clear();
-            Console.ReadKey();
-
-        }
-
-        static void Delete(ref string[] nameWorker, ref string[] postWorker)
-        {
-            Console.WriteLine("Введите номер досье:");
-            int userInPut = Convert.ToInt32(Console.ReadLine());
-            if (userInPut == nameWorker.Length)
-            {
-                string[] tempName = new string[nameWorker.Length - 1];
-                string[] tempPost = new string[postWorker.Length - 1];
-                for (int i = 0; i < tempName.Length; i++)
+                switch (userInput)
                 {
-                    tempName[i] = nameWorker[i];
-                    tempPost[i] = postWorker[i];
-                }
+                    case "1":
+                        CreateDossier(ref nameWorker, ref postWorker);
+                        Console.Clear();
+                        break;
+                    case "2":
+                        ShowDossier(ref nameWorker, ref postWorker);
+                        Console.ReadKey();
+                        Console.Clear();
+                        break;
+                    case "3":
+                        DeleteDossier(ref nameWorker, ref postWorker);
+                        Console.Clear();
+                        break;
+                    case "4":
+                        FoundName(ref nameWorker, ref postWorker);
+                        Console.ReadKey();
+                        Console.Clear();
+                        break;
+                    case "5":
+                        progWork = false;
+                        Console.Clear();
+                        break;
 
-                nameWorker = tempName;
-                postWorker = tempPost;
-            }
-            else if (userInPut > nameWorker.Length || userInPut <= 0)
-            {
-                Console.WriteLine("Такого досье нет.");
-            }
-            else
-            {
-                string[] tempName = new string[nameWorker.Length];
-                string[] tempPost = new string[postWorker.Length];
-
-                for (int i = 0; i < tempName.Length; i++)
-                {
-                    if (userInPut!=i-1)
-                    {
-                        tempName[i] = nameWorker[i];
-                        tempPost[i] = postWorker[i];
-                    }
-                }
-                nameWorker = tempName;
-                postWorker = tempPost;
-
-            }
-        }
-
-        static void FoundName(ref string[] nameWorker, ref string[] postWorker)
-        {
-            Console.WriteLine("Введите фамилию: ");
-            string userInPut = Console.ReadLine();
-            for (int i = 0; i < nameWorker.Length; i++)
-            {
-                if (nameWorker[i]==userInPut)
-                {
-                    Console.WriteLine($"Совподение найдено! Досье номер {i + 1}: ФИО: {nameWorker[i]}   Должность: {postWorker[i]}");
-                }
-                else
-                {
-                    Console.WriteLine("Совпадений не найдено!");
+                    default:
+                        Console.WriteLine("Неправильный ввод, попробуйте снова");
+                        Console.ReadKey();
+                        Console.Clear();
+                        break;
                 }
             }
 
         }
 
-        static void ShowDossier(ref string[] nameWorker, ref string[] postWorker)
+        static void CreateDossier(ref string[] arrayName,ref string[] arrayPost)
         {
-            for (int i = 0; i < nameWorker.Length; i++)
-            {
-            Console.Write($"Досье номер {i+1}: ФИО: {nameWorker[i]}   Должность: {postWorker[i]}  -  ");
-            }
-        }
-
-        static void CreateDossier(ref string[] nameWorker, ref string[] postWorker)
-        {
-            string[] tempName = new string[nameWorker.Length + 1];
-            string[] tempPost = new string[postWorker.Length + 1];
             Console.WriteLine("Введите ФИО сотрудника:");
             string name = Console.ReadLine();
-
-                for (int i = 0; i < nameWorker.Length; i++)
-                {
-                tempName[i] = nameWorker[i];
-                }
-                tempName[tempName.Length - 1] = name;
-            nameWorker = tempName;
-            
             Console.WriteLine("Введите должность сотрудника:");
             string post = Console.ReadLine();
 
-                for (int i = 0; i < postWorker.Length; i++)
-                {
-                tempPost[i] = postWorker[i];
-                }
-                tempPost[tempPost.Length - 1] = post;
-                postWorker = tempPost;
-            
+            string[] tempName = new string[arrayName.Length + 1];
+            string[] tempPost = new string[arrayPost.Length + 1];
 
+            for (int i = 0; i < arrayName.Length; i++)
+            {
+
+                tempName[i] = arrayName[i];
+                tempPost[i] = arrayPost[i];
+
+            }
+            arrayName = tempName;
+            arrayPost = tempPost;
+            tempName[arrayName.Length - 1] = name;
+            tempPost[arrayPost.Length - 1] = post;
+
+        }
+        static void DeleteDossier(ref string[] arrayName,ref string[] arrayPost)
+        {
+            Console.WriteLine("Введите номер досье для удаления:");
+            int numberDossier = Convert.ToInt32(Console.ReadLine());
+            if (numberDossier>=0 && numberDossier<=arrayName.Length)
+            {
+                arrayName[numberDossier - 1] = null;
+                arrayPost[numberDossier - 1] = null;
+            }
+            else
+            {
+                Console.WriteLine("Неправильный номер досье");
+            }
+        }
+        static void FoundName(ref string[] arrayName, ref string[] arrayPost)
+        {
+            Console.WriteLine("Введите фамилию для поиска: ");
+            string foundName = Console.ReadLine();
+            for (int i = 0; i < arrayName.Length; i++)
+            {
+                if (foundName==arrayName[i])
+                {
+                    Console.WriteLine($"Совподение найдено! Досье номер {i + 1} - ФИО: {arrayName[i]} - Должность: {arrayPost[i]}");
+                }
+                else
+                {
+                    Console.WriteLine("Совподений не найдено");
+                }
+            }
+        }
+        static void ShowDossier(ref string[] arrayName, ref string[] arrayPost)
+        {
+            for (int i = 0; i < arrayName.Length; i++)
+            {
+                Console.WriteLine($"Досье номер {i + 1} - ФИО: {arrayName[i]} - Должность: {arrayPost[i]}");
+            }
         }
 
     }
