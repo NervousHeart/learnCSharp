@@ -4,33 +4,37 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp1
+namespace dz20
 {
     class Program
     {
         static void Main(string[] args)
         {
-            ConvertNumbers();
+
+            CountNumber(out int resultCount);
         }
 
-        static void ConvertNumbers()
+        static void CountNumber(out int resultCount)
         {
-            bool progWork = true; 
+            bool progWork = true;
+            resultCount = 0;
             while (progWork)
             {
-
-            Console.WriteLine("Введите число:");
-            string userInPut = Console.ReadLine();
-            if (int.TryParse(userInPut,out int result))
-            {
-                Console.WriteLine($"Число успешно преобразованно: {result}");
+                Console.Clear();
+                Console.WriteLine("Введите любое число: ");
+                string userNumber = Console.ReadLine();
+                bool successCount = int.TryParse(userNumber, out int result);
+                if (successCount)
+                {   
+                    resultCount = result;
+                    Console.WriteLine($"Преобразование удачно: {result}");
                     Console.ReadKey();
                     progWork = false;
-            }
-            else
-            {
-                Console.WriteLine("Не удалось преобразовать число, попробуйте снова");
-            }
+                }
+                else
+                {
+                    Console.WriteLine("Неудача! Попробуйте снвоа");
+                }
             }
         }
     }
