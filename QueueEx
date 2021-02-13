@@ -10,23 +10,20 @@ namespace queueEx
     {
         static void Main(string[] args)
         {
-            int theMoneyStore = 0;
-
+            int moneyStore = 0;
             Random rand = new Random();
-
-            Queue<int> amount = new Queue<int>();
-
-            for (int i = 0; i < rand.Next(5,11); i++)
+            int queueLength = rand.Next(5,11);
+            Queue<int> amountOfBuyers = new Queue<int>();
+            for (int i = 0; i < queueLength; i++)
             {
-                amount.Enqueue(rand.Next(100, 501));
+                amountOfBuyers.Enqueue(rand.Next(100, 501));
             }
 
-            while (amount.Count>0)
+            while (amountOfBuyers.Count>0)
             {
-                Console.WriteLine($"В магазине очередь из {amount.Count} покупателей(-я). На счету магазина {theMoneyStore} денег.\n\nСледующий клиент набрал продуктов на сумму: {amount.Peek()}" );
-
-                theMoneyStore += amount.Dequeue();
-
+                Console.WriteLine($"В магазине очередь из {amountOfBuyers.Count} покупателей(-я). На счету магазина {moneyStore} денег.\n\nСледующий клиент набрал продуктов на сумму: {amount.Peek()}" );
+                
+                moneyStore += amountOfBuyers.Dequeue();
                 Console.WriteLine("Нажмите клавишу чтобы продолжить.");
                 Console.ReadKey();
                 Console.Clear();
