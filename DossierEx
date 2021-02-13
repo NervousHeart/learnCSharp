@@ -10,47 +10,52 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            bool progWork = true;
+            bool programmWorking = true;
             Dictionary<string, string> dossier = new Dictionary<string, string>();
 
-            while (progWork)
+            while (programmWorking)
             {
                 Console.WriteLine("1. Добавить досье\n2. Вывести все досье \n3. Удалить досье\n4. Выход");
-                int userInput = int.Parse(Console.ReadLine());
-                switch (userInput)
+                bool userInput = int.TryParse(Console.ReadLine(), out int resultInput);
+                
+
+                switch (resultInput)
                 {
                     case 1:
                         Console.WriteLine("введите ФИО сотрудника:");
                         string name = Console.ReadLine();
                         Console.WriteLine("Введите должность сотрудника:");
                         string post = Console.ReadLine();
-                        dossier.Add(name.ToLower(), post.ToLower()) ;
-                        Console.Clear();
+
+                        if (!dossier.ContainsKey(name.ToLower()))
+                            dossier.Add(name.ToLower(), post.ToLower());
+                        else
+                            Console.WriteLine("Такой сотрудник уже есть в базе.");
+                        Console.ReadKey();
                         break;
                     case 2:
-                        foreach (var item in dossier)
+                        foreach (var employees in dossier)
                         {
-                            Console.WriteLine($"- {item.Key} - {item.Value}");
+                            Console.WriteLine($"- {employees.Key} - {employees.Value}");
                         }
                         Console.ReadKey();
-                        Console.Clear();
                         break;
                     case 3:
                         Console.WriteLine("Введите ФИО сотрудника для удаления: ");
                         name = Console.ReadLine();
                         if (dossier.ContainsKey(name.ToLower()))
-                                dossier.Remove(name.ToLower());
+                            dossier.Remove(name.ToLower());
                         else
                             Console.WriteLine("Неправильный ввод, попробуй еще раз.");
-                        Console.Clear();
                         break;
                     case 4:
-                        progWork = false;
+                        programmWorking = false;
                         break;
                     default:
                         Console.WriteLine("Неправильный ввод, попробуй еще.");
                         break;
                 }
+                Console.Clear();
             }
         }
     }
