@@ -10,10 +10,10 @@ namespace DictionaryEx
     {
         static void Main(string[] args)
         {
-            Dictionary<string, string> ExplanotoryDictionary = new Dictionary<string, string>();
-            ExplanotoryDictionary.Add("гавань", "Прибрежная часть водного пространства, используемая для стоянки, причала и ремонта судов, а так же часть порта как транспортное предприятие");
-            ExplanotoryDictionary.Add("жаба", "Сходное с лягушкой бесхвостое земноводное с бородавчатой кожей");
-            ExplanotoryDictionary.Add("лавина", "Массы снега, снежных глыб, низвергающихся с гор");
+            Dictionary<string, string> explanotoryDictionary = new Dictionary<string, string>();
+            explanotoryDictionary.Add("гавань", "Прибрежная часть водного пространства, используемая для стоянки, причала и ремонта судов, а так же часть порта как транспортное предприятие");
+            explanotoryDictionary.Add("жаба", "Сходное с лягушкой бесхвостое земноводное с бородавчатой кожей");
+            explanotoryDictionary.Add("лавина", "Массы снега, снежных глыб, низвергающихся с гор");
 
             bool workProg = true;
             while (workProg)
@@ -24,12 +24,10 @@ namespace DictionaryEx
                 switch (userInput)
                 {
                     case 1:
-                        ShowValueWord(ExplanotoryDictionary);
-                        Console.ReadKey();
+                        ShowValueWord(explanotoryDictionary);
                         break;
                     case 2:
-                        ShowAllValues(ExplanotoryDictionary);
-                        Console.ReadKey();
+                        ShowAllValues(explanotoryDictionary);
                         break;
                     case 3:
                         workProg = false;
@@ -38,6 +36,7 @@ namespace DictionaryEx
                         Console.WriteLine("Неправильная команда, попробуйте еще.");
                         break;
                 }
+                Console.ReadKey();
                 Console.Clear();
 
 
@@ -46,9 +45,9 @@ namespace DictionaryEx
         }
         static void ShowAllValues(Dictionary<string, string> words)
         {
-            foreach (var item in words)
+            foreach (var word in words)
             {
-                Console.WriteLine($"Слово: {item.Key}.  Значение: {item.Value}\n");
+                Console.WriteLine($"Слово: {word.Key}.  Значение: {word.Value}\n");
             }
         }
 
