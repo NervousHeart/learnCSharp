@@ -1,0 +1,65 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DictionaryEx
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Dictionary<string, string> ExplanotoryDictionary = new Dictionary<string, string>();
+            ExplanotoryDictionary.Add("гавань", "Прибрежная часть водного пространства, используемая для стоянки, причала и ремонта судов, а так же часть порта как транспортное предприятие");
+            ExplanotoryDictionary.Add("жаба", "Сходное с лягушкой бесхвостое земноводное с бородавчатой кожей");
+            ExplanotoryDictionary.Add("лавина", "Массы снега, снежных глыб, низвергающихся с гор");
+
+            bool workProg = true;
+            while (workProg)
+            {
+                Console.WriteLine("Добро пожаловать в толковый словарь.\n\n1. Поиск значения введенного слова \n\n2. Списос всех доступных слов \n\n3.Выход");
+                int userInput = int.Parse(Console.ReadLine());
+
+                switch (userInput)
+                {
+                    case 1:
+                        ShowValueWord(ExplanotoryDictionary);
+                        Console.ReadKey();
+                        break;
+                    case 2:
+                        ShowAllValues(ExplanotoryDictionary);
+                        Console.ReadKey();
+                        break;
+                    case 3:
+                        workProg = false;
+                        break;
+                    default:
+                        Console.WriteLine("Неправильная команда, попробуйте еще.");
+                        break;
+                }
+                Console.Clear();
+
+
+            }
+
+        }
+        static void ShowAllValues(Dictionary<string, string> words)
+        {
+            foreach (var item in words)
+            {
+                Console.WriteLine($"Слово: {item.Key}.  Значение: {item.Value}\n");
+            }
+        }
+
+        static void ShowValueWord(Dictionary<string,string> words)
+        {
+            Console.WriteLine("Введите слово:");
+            string userInput = Console.ReadLine();
+            if (words.ContainsKey(userInput.ToLower()))
+                Console.WriteLine(words[userInput.ToLower()]);
+            else
+                Console.WriteLine("Такого слова нет в слвоаре, проверь все доступные слова в меню");
+        }
+    }
+}
