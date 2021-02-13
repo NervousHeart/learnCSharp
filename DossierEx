@@ -1,0 +1,57 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp1
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            bool progWork = true;
+            Dictionary<string, string> dossier = new Dictionary<string, string>();
+
+            while (progWork)
+            {
+                Console.WriteLine("1. Добавить досье\n2. Вывести все досье \n3. Удалить досье\n4. Выход");
+                int userInput = int.Parse(Console.ReadLine());
+                switch (userInput)
+                {
+                    case 1:
+                        Console.WriteLine("введите ФИО сотрудника:");
+                        string name = Console.ReadLine();
+                        Console.WriteLine("Введите должность сотрудника:");
+                        string post = Console.ReadLine();
+                        dossier.Add(name.ToLower(), post.ToLower()) ;
+                        Console.Clear();
+                        break;
+                    case 2:
+                        foreach (var item in dossier)
+                        {
+                            Console.WriteLine($"- {item.Key} - {item.Value}");
+                        }
+                        Console.ReadKey();
+                        Console.Clear();
+                        break;
+                    case 3:
+                        Console.WriteLine("Введите ФИО сотрудника для удаления: ");
+                        name = Console.ReadLine();
+                        if (dossier.ContainsKey(name.ToLower()))
+                                dossier.Remove(name.ToLower());
+                        else
+                            Console.WriteLine("Неправильный ввод, попробуй еще раз.");
+                        Console.Clear();
+                        break;
+                    case 4:
+                        progWork = false;
+                        break;
+                    default:
+                        Console.WriteLine("Неправильный ввод, попробуй еще.");
+                        break;
+                }
+            }
+        }
+    }
+}
