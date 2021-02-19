@@ -1,0 +1,120 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace dz22
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Введите ширину карты: ");
+            int weight = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Введите высоту карты: ");
+            int height = Convert.ToInt32(Console.ReadLine());
+            DrawMap(weight,height, out char[,] map);
+            PlayGame(ref map);
+        }
+
+        static void DrawMap(int sizeY, int sizeX, out char[,] map)
+        {
+            Random rand = new Random();
+            map = new char[sizeX,sizeY];
+
+
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for (int j = 0; j < map.GetLength(1); j++)
+                {
+                    int countObstacle = rand.Next(0, 10); 
+                    map[0, j] = '#';
+                    map[map.GetLength(0)-1, j] = '#';
+                    map[i, 0] = '#';
+                    map[i, map.GetLength(1) - 1] = '#';
+                    if (countObstacle==1&&map[1,1]!='#')
+                    {
+                        map[i, j] = '#';
+                    }
+                }
+            }
+        }
+        static void DrawMap(ref char[,] map)
+        {
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for (int j = 0; j < map.GetLength(1); j++)
+                {
+                    Console.Write(map[i, j]);
+                }
+                Console.WriteLine();
+            }
+        }
+
+        
+
+        static void PlayGame(ref char[,] map)
+        {
+            bool gameOn = true;
+            int y = 1;
+            int x = 1;
+            Console.Clear();
+            Console.WriteLine("Введите символ игрока:");
+            char userInput = Convert.ToChar(Console.ReadLine());
+            map[x, y] = userInput;
+            Console.Clear();
+            Console.WriteLine("Управление игроком через стрелки. Чтобы выйти нажмите Esc");
+            DrawMap(ref map);
+            while (gameOn)
+            {
+                ConsoleKeyInfo key;
+                key = Console.ReadKey(true);
+                switch (key.Key)
+                {
+                    
+                    case ConsoleKey.UpArrow:
+                        if (map[x-1,y]!='#')
+                        {
+                            map[x, y] = ' ';
+                            map[x-1, y]=userInput;
+                            x--;
+                           
+                        }
+                        break;
+                    case ConsoleKey.DownArrow:
+                        if (map[x+1, y] != '#')
+                        {
+                            map[x, y] = ' ';
+                            map[x+1, y ] = userInput;
+                            x++; 
+                        }
+                        break;
+                    case ConsoleKey.RightArrow:
+                        if (map[x, y+1] != '#')
+                        {
+                            map[x, y] = ' ';
+                            map[x, y+1] = userInput;
+                            y++;
+                        }
+                        break;
+                    case ConsoleKey.LeftArrow:
+                        if (map[x, y-1 ] != '#')
+                        {
+                            map[x, y] = ' ';
+                            map[x, y-1] = userInput;
+                            y--;
+                        }
+                        break;
+                    case ConsoleKey.Escape:
+                        gameOn = false;
+                        break;
+                    default:
+                        break;
+                }
+                Console.Clear();
+                DrawMap(ref map);
+            }
+        }
+    }
+}
