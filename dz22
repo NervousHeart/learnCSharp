@@ -64,10 +64,10 @@ namespace dz22
             char userInput = Convert.ToChar(Console.ReadLine());
             map[x, y] = userInput;
             Console.Clear();
-            Console.WriteLine("Управление игроком через стрелки. Чтобы выйти нажмите Esc");
             DrawMap(ref map);
             while (gameOn)
             {
+                Console.WriteLine("Управление игроком через стрелки. Чтобы выйти нажмите Esc");
                 ConsoleKeyInfo key;
                 key = Console.ReadKey(true);
                 switch (key.Key)
