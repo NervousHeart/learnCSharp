@@ -1,0 +1,41 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace IJuniorDZ
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Player player = new Player("Дима", "инженер", 24, 35000);
+            player.ShowInfo();
+            Console.ReadKey();
+        }
+    }
+
+    class Player
+    {
+        private string _name;
+        private string _postWork;
+        private int _age;
+        private int _salary;
+
+        public Player(string name, string postWork, int age, int salary)
+        {
+            _name = name;
+            _postWork = postWork;
+            _age = age;
+            _salary = salary;
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"Обычный работяга {_age} лет, которого зовут {_name}. Он занимает должность - {_postWork} и получает {_salary} в месяц.");
+        }
+
+    }
+
+}
