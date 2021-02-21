@@ -1,0 +1,44 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace IJuniorDZ
+{
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Player player = new Player('@', 10, 10);
+            Renderer render = new Renderer();
+            render.DrawPlayer(player.PlayerX,player.PlayerY,player.Symbol);
+        }
+    }
+
+    class Player
+    {
+        public char Symbol { get; private set; }
+        public int PlayerX { get; private set; }
+        public int PlayerY { get; private set; }
+
+        public Player(char symbol, int playerX, int playerY)
+        {
+            Symbol = symbol;
+            PlayerX = playerX;
+            PlayerY = playerY;
+        }
+    }
+
+    class Renderer
+    {
+        public void DrawPlayer(int x,int y,char player)
+        {
+            Console.SetCursorPosition(x, y);
+            Console.Write(player);
+            Console.ReadKey();
+        }
+    }
+
+}
