@@ -4,43 +4,72 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace dz22
+namespace dzIJuniorMap
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Введите ширину карты: ");
-            int weight = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Введите высоту карты: ");
-            int height = Convert.ToInt32(Console.ReadLine());
-            DrawMap(weight,height, out char[,] map);
-            PlayGame(ref map);
+            Console.WriteLine("Введите ширину карты");
+            int weightMap = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Введите высоту карты");
+            int heightMap = Convert.ToInt32(Console.ReadLine());
+            char[,] map = CreateMap(weightMap, heightMap);
+            Console.CursorVisible = false;
+            Console.Clear();
+            DrawMap(map);
+            PlayGame(map);
         }
 
-        static void DrawMap(int sizeY, int sizeX, out char[,] map)
+        static char[,] CreateMap(int weight, int height)
         {
+            bool setPlayer = false;
             Random rand = new Random();
-            map = new char[sizeX,sizeY];
-
+            char[,] map = new char[height, weight];
+            int minDifficult = weight * height - weight - height;
+            int maxdifficult = weight * height*2;
 
             for (int i = 0; i < map.GetLength(0); i++)
             {
                 for (int j = 0; j < map.GetLength(1); j++)
                 {
-                    int countObstacle = rand.Next(0, 10); 
                     map[0, j] = '#';
-                    map[map.GetLength(0)-1, j] = '#';
+                    map[map.GetLength(0) - 1, j] = '#';
                     map[i, 0] = '#';
                     map[i, map.GetLength(1) - 1] = '#';
-                    if (countObstacle==1&&map[1,1]!='#')
+                }
+            }
+
+            for (int i = 1; i < map.GetLength(0); i++)
+            {
+                for (int j = 1; j < map.GetLength(1); j++)
+                {
+                    int countObstacles = rand.Next(minDifficult,maxdifficult);
+                    int presenseObstacle =rand.Next(0,4);
+                    if (presenseObstacle==0&&countObstacles>0)
                     {
                         map[i, j] = '#';
+                        countObstacles--;
                     }
                 }
             }
+
+            for (int i = 1; i < map.GetLength(0); i++)
+            {
+                for (int j = 1; j < map.GetLength(1); j++)
+                {
+                    if (map[i, j] != '#' && setPlayer == false)
+                    {
+                        map[i, j] = 'A';
+                        setPlayer = true;
+                    }
+                }
+            }
+
+            return map;
+            
         }
-        static void DrawMap(ref char[,] map)
+        static void DrawMap(char[,] map)
         {
             for (int i = 0; i < map.GetLength(0); i++)
             {
@@ -51,70 +80,66 @@ namespace dz22
                 Console.WriteLine();
             }
         }
-
-        
-
-        static void PlayGame(ref char[,] map)
+        static void Move(ConsoleKeyInfo key, char[,] map, ref int playerX, ref int playerY)
         {
-            bool gameOn = true;
-            int y = 1;
-            int x = 1;
-            Console.Clear();
-            Console.WriteLine("Введите символ игрока:");
-            char userInput = Convert.ToChar(Console.ReadLine());
-            map[x, y] = userInput;
-            Console.Clear();
-            DrawMap(ref map);
-            while (gameOn)
+
+            int playerDX=1, playerDY=0;
+
+            switch (key.Key)
             {
-                Console.WriteLine("Управление игроком через стрелки. Чтобы выйти нажмите Esc");
-                ConsoleKeyInfo key;
-                key = Console.ReadKey(true);
-                switch (key.Key)
-                {
-                    
-                    case ConsoleKey.UpArrow:
-                        if (map[x-1,y]!='#')
-                        {
-                            map[x, y] = ' ';
-                            map[x-1, y]=userInput;
-                            x--;
-                           
-                        }
-                        break;
-                    case ConsoleKey.DownArrow:
-                        if (map[x+1, y] != '#')
-                        {
-                            map[x, y] = ' ';
-                            map[x+1, y ] = userInput;
-                            x++; 
-                        }
-                        break;
-                    case ConsoleKey.RightArrow:
-                        if (map[x, y+1] != '#')
-                        {
-                            map[x, y] = ' ';
-                            map[x, y+1] = userInput;
-                            y++;
-                        }
-                        break;
-                    case ConsoleKey.LeftArrow:
-                        if (map[x, y-1 ] != '#')
-                        {
-                            map[x, y] = ' ';
-                            map[x, y-1] = userInput;
-                            y--;
-                        }
-                        break;
-                    case ConsoleKey.Escape:
-                        gameOn = false;
-                        break;
-                    default:
-                        break;
-                }
-                Console.Clear();
-                DrawMap(ref map);
+
+                case ConsoleKey.UpArrow:
+                    playerDX = 0; playerDY = -1;
+                    break;
+                case ConsoleKey.DownArrow:
+                    playerDX = 0; playerDY = 1;
+                    break;
+                case ConsoleKey.RightArrow:
+                    playerDY = 0; playerDX = 1;
+                    break;
+                case ConsoleKey.LeftArrow:
+                    playerDY = 0; playerDX = -1;
+                    break;
+            }
+
+            if (map[playerY + playerDY, playerX+playerDX] != '#')
+            {
+                Console.SetCursorPosition(playerX, playerY);
+                Console.Write(' ');
+
+                playerY += playerDY;
+                playerX += playerDX;
+
+                Console.SetCursorPosition(playerX, playerY);
+                Console.Write('A');
             }
         }
+        static void PlayGame(char[,] map)
+        {
+            bool isPlaying = true;
+            int playerX = 0;
+            int playerY = 0;
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for (int j = 0; j < map.GetLength(1); j++)
+                {
+                    if (map[i, j] == 'A')
+                    {
+                        playerX = i;
+                        playerY = j;
+                    }
+                }
+            }
+
+
+
+            while (isPlaying)
+            {
+                Move(Console.ReadKey(true),map, ref playerX, ref playerY);
+            }
+
+
+        }
+
     }
 }
