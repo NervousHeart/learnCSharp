@@ -26,8 +26,9 @@ namespace dzIJuniorMap
             bool setPlayer = false;
             Random rand = new Random();
             char[,] map = new char[height, weight];
+            int modimodifierDifficult = 2;
             int minDifficult = weight * height - weight - height;
-            int maxdifficult = weight * height*2;
+            int maxdifficult = weight * height*modimodifierDifficult;
 
             for (int i = 0; i < map.GetLength(0); i++)
             {
@@ -83,7 +84,7 @@ namespace dzIJuniorMap
         static void Move(ConsoleKeyInfo key, char[,] map, ref int playerX, ref int playerY)
         {
 
-            int playerDX=1, playerDY=0;
+            int playerDX=0, playerDY=0;
 
             switch (key.Key)
             {
