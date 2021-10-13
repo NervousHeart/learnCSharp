@@ -1,0 +1,199 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace IJuniorDZ
+{
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            bool isWork = true;
+
+            Trader trader = new Trader();
+            Player player = new Player(500);
+
+            while (isWork)
+            {
+                Console.WriteLine("1. Посмотреть ассортимента торговца \n2. Посмотреть инвентарь \n3. Выйти\n\n\nКоличество золота - " + player.GetMoney());
+
+
+                switch (UserInput())
+                {
+                    case 1:
+                        trader.GoDeal(player);
+                        break;
+
+                    case 2:
+                        player.ShowInventory();
+                        break;
+                    case 3:
+                        isWork = false;
+                        break;
+                    default:
+                        break;
+                }
+
+                Console.ReadKey();
+                Console.Clear();
+
+            }
+        }
+        static int UserInput()
+        {
+
+            string userInput = Console.ReadLine();
+            bool successCount = int.TryParse(userInput, out int result);
+            if (successCount)
+                return result;
+            else
+            {
+                Console.WriteLine("Неправильный ввод, попробуйте заново.");
+                return 0;
+            }
+        }
+    }
+
+    class Trader
+    {
+        private int _money;
+        private List<Product> _products = new List<Product> { new Product(150, "Железный меч"), new Product(5, "Яблоко") };
+
+        public void GoDeal(Player player)
+        {
+            Console.Clear();
+            Console.WriteLine($"Количекство золота - { player.GetMoney()}\n\n");
+            ShowProducts();
+
+            Console.WriteLine("Введите номер продукта");
+            int numberProduct = UserInput();
+
+
+            if (CheckDeal (numberProduct))
+            {
+                if (player.ChekSolvency(_products.ElementAt(numberProduct-1).Price))
+                {
+                    player.GetPurchase(_products.ElementAt(numberProduct - 1));
+                    _products.RemoveAt(numberProduct - 1);
+                    _money += player.ToPay();
+                }
+                else
+                {
+                    Console.WriteLine("У вас нет столько денег");
+                }
+
+            }
+        }
+        private bool CheckDeal(int number)
+        {
+            if (number-1>_products.Count || number-1<0)
+            {
+                Console.WriteLine("Такого товара нет, попробуйте заново.");
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+        }
+
+        private void ShowProducts()
+        {
+            for (int i = 0; i < _products.Count; i++)
+            {
+                Console.Write(i+1 + " - ");
+                _products[i].ShowInfo();
+               
+            }
+        }
+
+        private void GetMoney(int money)
+        {
+            _money += money;
+        }
+        private int UserInput()
+        {
+
+            string userInput = Console.ReadLine();
+            bool successCount = int.TryParse(userInput, out int result);
+            if (successCount)
+                return result;
+            else
+            {
+                Console.WriteLine("Неправильный ввод, попробуйте заново.");
+                return 0;
+            }
+        }
+
+    }
+
+    class Player
+    {
+        private int _money;
+        private int _moneyToPay;
+        private List<Product> _inventory = new List<Product>();
+        public Player(int money)
+        {
+            _money = money;
+        }
+
+        public void ShowInventory()
+        {
+            foreach (var product in _inventory)
+            {
+                product.ShowInfo();
+            }
+        }
+        public bool ChekSolvency(int price)
+        {
+            if (_money>=price)
+            {
+                _moneyToPay = price;
+                return true;
+            }
+            else
+            {
+                _moneyToPay = 0;
+                return false;
+            }
+        }
+        public int ToPay()
+        {
+            _money -= _moneyToPay;
+            return _moneyToPay;
+        }
+        public int GetMoney()
+        {
+            return _money;
+        }
+        public void GetPurchase(Product product)
+        {
+            _inventory.Add(product);
+        }
+
+    }
+
+    class Product
+    {
+        public int Price { get; private set; }
+
+        private string _name;
+
+        public Product(int price, string name)
+        {
+            Price = price;
+            _name = name;
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"{_name} стоимостью {Price}.");
+        }
+    }
+
+
+}
