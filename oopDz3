@@ -9,7 +9,7 @@ namespace oopDZ3
     class Program
     {
 
-        
+
         static void Main(string[] args)
         {
             bool isWork = true;
@@ -19,8 +19,7 @@ namespace oopDZ3
             while (isWork)
             {
                 Console.WriteLine("1. Вывести всех игроков \n2. Добавить игрока \n3. Удалить игрока \n4. Забанить игрока \n5. Разбанить игрока \n6. Выход");
-                int userInput = Convert.ToInt32(Console.ReadLine());
-                switch (userInput)
+                switch (UserInput())
                 {
                     case 1:
                         dataBase.ShowAllPlayers();
@@ -53,8 +52,16 @@ namespace oopDZ3
 
         static int UserInput()
         {
-            int userInput = Convert.ToInt32(Console.ReadLine());
-            return userInput;
+
+            string userInput = Console.ReadLine();
+            bool successCount = int.TryParse(userInput, out int result);
+            if (successCount)
+                return result;
+            else
+            {
+                Console.WriteLine("Неправильный ввод, попробуйте заново.");
+                return 0;
+            }
         }
     }
 
@@ -82,7 +89,7 @@ namespace oopDZ3
             }
             return result;
         }
-        
+
         public void CreatePlayer()
         {
             Console.WriteLine("Введите имя игрока");
@@ -108,12 +115,12 @@ namespace oopDZ3
         public void BannedPlayer(int id)
         {
             int index = FindPlayer(id);
-            _players[index].IsBanned = true;
+            _players[index].BannedPlayer();
         }
         public void UnBannedPlayer(int id)
         {
             int index = FindPlayer(id);
-            _players[index].IsBanned = false;
+            _players[index].UnBannedPlayer();
         }
     }
 
@@ -124,7 +131,7 @@ namespace oopDZ3
         private int _playerLevel;
 
         public int PlayerId { get; private set; }
-        public bool IsBanned { get; set; }
+        public bool IsBanned { get; private set; }
 
         public Player(string name, int id)
         {
@@ -138,12 +145,21 @@ namespace oopDZ3
         {
             if (IsBanned)
             {
-                Console.WriteLine($"Игрок {_playerName} - {_playerLevel} уровня , под номером {PlayerId} сейчас забанен" );
+                Console.WriteLine($"Игрок {_playerName} - {_playerLevel} уровня , под номером {PlayerId} сейчас забанен");
             }
             else
             {
                 Console.WriteLine($"Игрок {_playerName} - {_playerLevel}  уровня, под номером {PlayerId} сейчас не в бане");
             }
+        }
+
+        public void BannedPlayer()
+        {
+            IsBanned = true;
+        }
+        public void UnBannedPlayer()
+        {
+            IsBanned = false;
         }
     }
 
