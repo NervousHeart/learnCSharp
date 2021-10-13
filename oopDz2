@@ -13,30 +13,30 @@ namespace IJuniorDZ
         {
             Player player = new Player('@', 10, 10);
             Renderer render = new Renderer();
-            render.DrawPlayer(player.PlayerX,player.PlayerY,player.Symbol);
+            render.DrawPlayer(player);
         }
     }
 
     class Player
     {
         public char Symbol { get; private set; }
-        public int PlayerX { get; private set; }
-        public int PlayerY { get; private set; }
+        public int X { get; private set; }
+        public int Y { get; private set; }
 
         public Player(char symbol, int playerX, int playerY)
         {
             Symbol = symbol;
-            PlayerX = playerX;
-            PlayerY = playerY;
+            X = playerX;
+            Y = playerY;
         }
     }
 
     class Renderer
     {
-        public void DrawPlayer(int x,int y,char player)
+        public void DrawPlayer(Player player)
         {
-            Console.SetCursorPosition(x, y);
-            Console.Write(player);
+            Console.SetCursorPosition(player.X, player.Y);
+            Console.Write(player.Symbol);
             Console.ReadKey();
         }
     }
