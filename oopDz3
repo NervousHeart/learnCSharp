@@ -4,69 +4,41 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IJuniorDZ
+namespace oopDZ3
 {
-
     class Program
     {
+
+        
         static void Main(string[] args)
         {
-            List<Player> players = new List<Player> { new Player (1, "Vivi", 95,true), new Player(2,"Lulu", 120, false ) };
-
             bool isWork = true;
+
+            DataBase dataBase = new DataBase();
 
             while (isWork)
             {
-                Console.WriteLine("1. Вывести всех игроков \n2. Добавить нового игрока \n3. Забанить игрока \n4. Разбанить игрока \n5. Удалить игрока \n6. Выход");
+                Console.WriteLine("1. Вывести всех игроков \n2. Добавить игрока \n3. Удалить игрока \n4. Забанить игрока \n5. Разбанить игрока \n6. Выход");
                 int userInput = Convert.ToInt32(Console.ReadLine());
                 switch (userInput)
                 {
                     case 1:
-                        foreach (var player in players)
-                        {
-                            player.ShowPlayer();
-                        }
-                        Console.ReadKey();
+                        dataBase.ShowAllPlayers();
                         break;
                     case 2:
-                        Console.Clear();
-                        Console.WriteLine("Введите порядковый номер игрока");
-                        userInput = Convert.ToInt32(Console.ReadLine());
-                        if(CheckNumber(userInput,players))
-                        {
-                            Console.WriteLine("Введите имя игрока:");
-                            string userInputName = Console.ReadLine();
-                            players.Add(new Player(userInput, userInputName, 1, false));
-                        }
-                        else
-                        {
-                            Console.WriteLine("Игрок с таким номером уже есть!");
-                        }
+                        dataBase.CreatePlayer();
                         break;
                     case 3:
-                        Console.WriteLine("Введите номер игрока");
-                        userInput = Convert.ToInt32(Console.ReadLine());
-                        if (CheckNumber(userInput,players))
-                        {
-                            players[FindPlayer(userInput, players)].IsBanned = true;
-                        }
+                        Console.WriteLine("Введите ID игрока");
+                        dataBase.DelitePlayer(UserInput());
                         break;
                     case 4:
-                        Console.WriteLine("Введите номер игрока");
-                        userInput = Convert.ToInt32(Console.ReadLine());
-                        if (CheckNumber(userInput, players))
-                        {
-                            players[FindPlayer(userInput, players)].IsBanned = false;
-                        }
+                        Console.WriteLine("Введите ID игрока");
+                        dataBase.BannedPlayer(UserInput());
                         break;
                     case 5:
-                        Console.Clear();
-                        Console.WriteLine("Введите порядковый номер игрока");
-                        userInput = Convert.ToInt32(Console.ReadLine());
-                        if (CheckNumber(userInput,players))
-                        {
-                            players.RemoveAt(FindPlayer(userInput,players));
-                        }
+                        Console.WriteLine("Введите ID игрока");
+                        dataBase.UnBannedPlayer(UserInput());
                         break;
                     case 6:
                         isWork = false;
@@ -74,69 +46,105 @@ namespace IJuniorDZ
                     default:
                         break;
                 }
+                Console.ReadKey();
                 Console.Clear();
             }
-
         }
 
-        static bool CheckNumber(int userInput, List<Player> players)
+        static int UserInput()
         {
-            bool result = false;
-            foreach (var player in players)
-            {
-                if (userInput == player.Number)
-                {
-                   
-                    result = false;
-                }
-                else
-                {
-                    result = true;
-                    break;
-                }
-            }
-            return result;
+            int userInput = Convert.ToInt32(Console.ReadLine());
+            return userInput;
         }
+    }
 
-        static int FindPlayer(int userInput, List<Player> players)
+    class DataBase
+    {
+        private List<Player> _players = new List<Player>();
+
+        private int FindPlayer(int id)
         {
             int result = 0;
-            for (int i = 0; i < players.Count; i++)
+            for (int i = 0; i < _players.Count; i++)
             {
-                if (players[i].Number==userInput)
-                {
+                if (id == _players[i].PlayerId)
                     result = i;
-                }
             }
             return result;
         }
-
+        private bool CheckPlayer(int userInput)
+        {
+            bool result = false;
+            foreach (var player in _players)
+            {
+                if (userInput == player.PlayerId)
+                    result = true;
+            }
+            return result;
+        }
+        
+        public void CreatePlayer()
+        {
+            Console.WriteLine("Введите имя игрока");
+            string name = Console.ReadLine();
+            Console.WriteLine("Введите ID игрока");
+            int id = Convert.ToInt32(Console.ReadLine());
+            if (CheckPlayer(id))
+                Console.WriteLine("Игрок с тайим ID уже существует, попробуйте заново");
+            else
+                _players.Add(new Player(name, id));
+        }
+        public void ShowAllPlayers()
+        {
+            foreach (var player in _players)
+            {
+                player.ShowInfo();
+            }
+        }
+        public void DelitePlayer(int id)
+        {
+            _players.RemoveAt(FindPlayer(id));
+        }
+        public void BannedPlayer(int id)
+        {
+            int index = FindPlayer(id);
+            _players[index].IsBanned = true;
+        }
+        public void UnBannedPlayer(int id)
+        {
+            int index = FindPlayer(id);
+            _players[index].IsBanned = false;
+        }
     }
-}
 
     class Player
     {
-        public int Number { get; private set; }
+
+        private string _playerName;
+        private int _playerLevel;
+
+        public int PlayerId { get; private set; }
         public bool IsBanned { get; set; }
-        private string _name;
-        private int _level;
 
-        public Player(int number, string name, int level, bool isBanned)
+        public Player(string name, int id)
         {
-            Number = number;
-            _name = name;
-            _level = level;
-            IsBanned = isBanned;
+            _playerName = name;
+            _playerLevel = 1;
+            PlayerId = id;
+            IsBanned = false;
         }
 
-        public void ShowPlayer()
+        public void ShowInfo()
         {
-            if (IsBanned) 
-                Console.WriteLine($"Номер: {Number}. Игрок под ником {_name} {_level} уровня сейчас забанен!");
+            if (IsBanned)
+            {
+                Console.WriteLine($"Игрок {_playerName} - {_playerLevel} уровня , под номером {PlayerId} сейчас забанен" );
+            }
             else
-                Console.WriteLine($"Номер: {Number}. Игрок под ником {_name} {_level} уровня сейчас не в бане!");
+            {
+                Console.WriteLine($"Игрок {_playerName} - {_playerLevel}  уровня, под номером {PlayerId} сейчас не в бане");
+            }
         }
-
-
     }
 
+}
