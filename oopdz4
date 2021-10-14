@@ -13,8 +13,8 @@ namespace IJuniorDZ
         {
             bool isWork = true;
 
-            Trader trader = new Trader();
-            Player player = new Player(500);
+            Trader trader = new Trader(new List<Product> { new Product(150, "Железный меч"), new Product(5, "Яблоко") });
+            Player player = new Player(500, new List<Product>());
 
             while (isWork)
             {
@@ -60,8 +60,12 @@ namespace IJuniorDZ
     class Trader
     {
         private int _money;
-        private List<Product> _products = new List<Product> { new Product(150, "Железный меч"), new Product(5, "Яблоко") };
+        private List<Product> _products;
 
+        public Trader(List<Product> products)
+        {
+            _products = products;
+        }
         public void GoDeal(Player player)
         {
             Console.Clear();
@@ -135,9 +139,10 @@ namespace IJuniorDZ
     {
         private int _money;
         private int _moneyToPay;
-        private List<Product> _inventory = new List<Product>();
-        public Player(int money)
+        private List<Product> _inventory;
+        public Player(int money, List<Product> inventory)
         {
+            _inventory = inventory;
             _money = money;
         }
 
