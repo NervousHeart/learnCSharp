@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace IJuniorDZ
 {
-
     class Program
     {
         static void Main(string[] args)
@@ -21,16 +20,16 @@ namespace IJuniorDZ
                 Console.WriteLine("1. Посмотреть ассортимента торговца \n2. Посмотреть инвентарь \n3. Выйти\n\n\nКоличество золота - " + player.GetMoney());
 
 
-                switch (UserInput())
+                switch (Console.ReadLine())
                 {
-                    case 1:
+                    case "1":
                         trader.GoDeal(player);
                         break;
 
-                    case 2:
+                    case "2":
                         player.ShowInventory();
                         break;
-                    case 3:
+                    case "3":
                         isWork = false;
                         break;
                     default:
@@ -40,19 +39,6 @@ namespace IJuniorDZ
                 Console.ReadKey();
                 Console.Clear();
 
-            }
-        }
-        static int UserInput()
-        {
-
-            string userInput = Console.ReadLine();
-            bool successCount = int.TryParse(userInput, out int result);
-            if (successCount)
-                return result;
-            else
-            {
-                Console.WriteLine("Неправильный ввод, попробуйте заново.");
-                return 0;
             }
         }
     }
@@ -76,13 +62,13 @@ namespace IJuniorDZ
             int numberProduct = UserInput();
 
 
-            if (CheckDeal (numberProduct))
+            if (CheckAvailabilityProduct(numberProduct))
             {
-                if (player.ChekSolvency(_products.ElementAt(numberProduct-1).Price))
+                if (player.ChekSolvency(_products.ElementAt(numberProduct - 1).Price))
                 {
                     player.GetPurchase(_products.ElementAt(numberProduct - 1));
                     _products.RemoveAt(numberProduct - 1);
-                    _money += player.ToPay();
+                    GetMoney(player);
                 }
                 else
                 {
@@ -91,9 +77,9 @@ namespace IJuniorDZ
 
             }
         }
-        private bool CheckDeal(int number)
+        private bool CheckAvailabilityProduct(int number)
         {
-            if (number-1>_products.Count || number-1<0)
+            if (number - 1 > _products.Count || number - 1 < 0)
             {
                 Console.WriteLine("Такого товара нет, попробуйте заново.");
                 return false;
@@ -109,15 +95,15 @@ namespace IJuniorDZ
         {
             for (int i = 0; i < _products.Count; i++)
             {
-                Console.Write(i+1 + " - ");
+                Console.Write(i + 1 + " - ");
                 _products[i].ShowInfo();
-               
+
             }
         }
 
-        private void GetMoney(int money)
+        private void GetMoney(Player player)
         {
-            _money += money;
+            _money += player.ToPay() ;
         }
         private int UserInput()
         {
@@ -155,7 +141,7 @@ namespace IJuniorDZ
         }
         public bool ChekSolvency(int price)
         {
-            if (_money>=price)
+            if (_money >= price)
             {
                 _moneyToPay = price;
                 return true;
@@ -184,9 +170,8 @@ namespace IJuniorDZ
 
     class Product
     {
-        public int Price { get; private set; }
-
         private string _name;
+        public int Price { get; private set; }
 
         public Product(int price, string name)
         {
