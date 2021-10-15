@@ -203,7 +203,7 @@ namespace IJuniorDZ
             rand = new Random();
         }
 
-        public virtual int TakeDamage()
+        public int TakeDamage()
         {
             if (HitChance())
             {
@@ -231,7 +231,7 @@ namespace IJuniorDZ
 
         }
 
-        public int TakeSpecialAttack()
+        public virtual int TakeSpecialAttack()
         {
             if (HavingEnergy() && HitChance())
             {
@@ -244,10 +244,7 @@ namespace IJuniorDZ
                 return 0;
             }
         }
-        public virtual void SpecialAbility(int heal)
-        {
-            Console.WriteLine($"{Name} подлечил себя на {heal}");
-        }
+
         public bool HitChance()
         {
             if (_accuracy * rand.Next(7, 21) > 60)
@@ -297,7 +294,7 @@ namespace IJuniorDZ
 
     class Berserk : Warrior
     {
-        public Berserk(string name) : base(name, "Удар в прыжке", 5, 1500, 250, 100, 50, 150) { }
+        public Berserk(string name) : base(name, "Удар в прыжке", 5, 1200, 250, 100, 50, 150) { }
     }
 
 }
