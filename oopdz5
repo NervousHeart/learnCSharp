@@ -1,0 +1,304 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace IJuniorDZ
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+
+            bool isWork = true;
+            List<Warrior> warriors = new List<Warrior> { new Archer("Арчер"), new Paladin("Паладин", 30), new Mage("Маг"), new Assasin("Ассасин"), new Berserk("Берсерк") };
+            Arena arena = new Arena(warriors);
+
+            while (isWork)
+            {
+                Console.Clear();
+                Console.WriteLine("Вы на арене! \n1.Выбрать бойцов \n2. Начать бой \n3. Выход");
+
+
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        arena.Choisefighters();
+                        break;
+                    case "2":
+                        if (arena.FightersChoisen)
+                            arena.Fight();
+                        else
+                            Console.WriteLine("Выберите сначала бойцов.");
+                        break;
+                    case "3":
+                        isWork = false;
+                        break;
+                    default:
+                        break;
+                }
+                Console.ReadKey();
+                Console.Clear();
+            }
+
+        }
+    }
+
+
+
+    class Arena
+    {
+        private List<Warrior> _warriors;
+        private Warrior fighter1;
+        private Warrior fighter2;
+        public bool FightersChoisen { get; private set; }
+        public Arena(List<Warrior> warriors)
+        {
+            _warriors = warriors;
+            FightersChoisen = false;
+        }
+
+        public void Fight()
+        {
+            Console.Clear();
+
+            ShowInfo(fighter1, fighter2);
+
+            while (fighter1.Health>0 && fighter2.Health>0)
+            {
+                if (fighter1.HavingEnergy()&&fighter1.HitChance())
+                    fighter2.GetDamage(fighter1.TakeSpecialAttack());
+                else
+                    fighter2.GetDamage(fighter1.TakeDamage());
+
+                if (fighter2.HavingEnergy()&&fighter2.HitChance())
+                    fighter1.GetDamage(fighter2.TakeSpecialAttack());
+                else
+                    fighter1.GetDamage(fighter2.TakeDamage());
+
+                Console.ReadKey();
+            }
+
+            if (fighter1.Health <= 0)
+                Console.WriteLine($"Боец {fighter1.Name} пал.");
+            else
+                Console.WriteLine($"Боец {fighter2.Name} пал.");
+
+        }
+        public void Choisefighters()
+        {
+            bool isWork = true;
+            List<Warrior> fighters;
+            fighter1 = null;
+            fighter2 = null;
+            int userInput;
+
+            while (isWork)
+            {
+                Console.Clear();
+                ShowInfo(fighter1, fighter2);
+                Console.WriteLine("Список бойцов на арене: \n");
+                for (int i = 0; i < _warriors.Count; i++)
+                {
+                    Console.WriteLine(i + 1 + " - " + _warriors[i].Name);
+                }
+                Console.WriteLine("\n6 - Подтвердить выбор \n\n7 - Заново выбрать бойцов\nВыберите бойца: ");
+
+
+                switch (userInput = UserInput())
+                {
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                        if (fighter1 == null)
+                            fighter1 = GetFighter(userInput);
+                        else if (fighter1 != null && fighter2 == null)
+                            fighter2 = GetFighter(userInput); ;
+                        break;
+                    case 6:
+                        fighters = new List<Warrior> { fighter1, fighter2 };
+                        FightersChoisen = true;
+                        isWork = false;
+                        break;
+                    case 7:
+                        fighter1 = null;
+                        fighter2 = null;
+                        break;
+                    default:
+                        Console.WriteLine("Бойца под таким номером нет.");
+                        break;
+                }
+
+
+                Console.ReadKey();
+            }
+        }
+
+        private void ShowInfo(Warrior fighter1, Warrior fighter2)
+        {
+            if (fighter1 == null && fighter2 == null)
+                Console.WriteLine("Боец номер 1: \nБоец номер 2: ");
+            else if (fighter1 != null && fighter2 == null)
+                Console.WriteLine($"Боец номер 1: {fighter1.Name}\nБоец номер 2: ");
+            else
+                Console.WriteLine($"Боец номер 1: {fighter1.Name} \nБоец номер 2: {fighter2.Name}");
+        }
+        private Warrior GetFighter(int userInput)
+        {
+            if (userInput - 1 < _warriors.Count && userInput - 1 >= 0)
+            {
+                return _warriors.ElementAt<Warrior>(userInput - 1);
+            }
+            else
+            {
+                Console.WriteLine("Бойца под таким номером нет");
+                return null;
+            }
+
+        }
+        private int UserInput()
+        {
+
+            string userInput = Console.ReadLine();
+            bool successCount = int.TryParse(userInput, out int result);
+            if (successCount)
+                return result;
+            else
+            {
+                Console.WriteLine("Неправильный ввод, попробуйте заново.");
+                return 0;
+            }
+        }
+    }
+
+    abstract class Warrior
+    {
+        private string _nameSpecialAttac;
+        private int _accuracy;
+        private int _damage;
+        private int _costSpell;
+        private int _specialDamage;
+        private int _nativeHealth; 
+
+        private Random rand;
+        public string Name { get; private set; }
+        public int Health { get; private set; }
+        public int Energy { get; private set; }
+
+        public Warrior(string name, string nameSpecialAttack, int accuracy, int health, int energy, int damage, int costSpell, int specialDamage)
+        {
+            Name = name;
+            _nameSpecialAttac = nameSpecialAttack;
+            _accuracy = accuracy;
+            Health = health;
+            Energy = energy;
+            _damage = damage;
+            _costSpell = costSpell;
+            _specialDamage = specialDamage;
+
+            _nativeHealth = Health;
+            rand = new Random();
+        }
+
+        public virtual int TakeDamage()
+        {
+            if (HitChance())
+            {
+                Console.WriteLine($"{Name} Наносит удар на {_damage} урона.");
+                return _damage;
+            }
+            else
+            {
+                Console.WriteLine($"{Name} промахивается по противнику.");
+                return 0;
+            }
+
+
+        }
+
+        public virtual void GetDamage(int damage)
+        {
+            Health -= damage;
+            if (Health>_nativeHealth/1.5)
+                Console.WriteLine($"Боец {Name} выглядит здоровым");
+            else if (Health>_nativeHealth/2)
+                Console.WriteLine($"Боец {Name} ранен");
+            else if (Health>_nativeHealth/5)
+                Console.WriteLine($"{Name} при смерти");
+
+        }
+
+        public int TakeSpecialAttack()
+        {
+            if (HavingEnergy() && HitChance())
+            {
+                Console.WriteLine($"{Name} наносит {_nameSpecialAttac} на {_specialDamage} урона.");
+                return _specialDamage;
+            }
+            else
+            {
+                Console.WriteLine($"У {Name} не хватило энергии! Удар прошел впустую.");
+                return 0;
+            }
+        }
+        public virtual void SpecialAbility(int heal)
+        {
+            Console.WriteLine($"{Name} подлечил себя на {heal}");
+        }
+        public bool HitChance()
+        {
+            if (_accuracy * rand.Next(7, 21) > 60)
+                return true;
+            else
+                return false;
+        }
+        public bool HavingEnergy()
+        {
+            if (Energy >= _costSpell)
+                return true;
+            else
+                return false;
+        }
+    }
+
+    class Mage : Warrior
+    {
+        public Mage(string name) : base(name, "Огненный шар", 5, 500, 500, 30, 150, 200) { }
+
+
+    }
+
+    class Paladin : Warrior
+    {
+        private int _armor;
+        public Paladin(string name, int armor) : base(name, "Удар света", 6, 1000, 300, 80, 100, 130) { int _armor = armor;  }
+        public override void GetDamage(int damage)
+        {
+            base.GetDamage(damage - _armor); ;
+        }
+
+    }
+
+    class Archer : Warrior
+    {
+        public Archer(string name) : base(name, "Спиральная стрела", 7, 600, 400, 60, 100, 120) { }
+
+    }
+
+    class Assasin : Warrior
+    {
+        public Assasin(string name) : base(name, "Удар в спину", 8, 500, 600, 50, 150, 100) { }
+
+    }
+
+
+    class Berserk : Warrior
+    {
+        public Berserk(string name) : base(name, "Удар в прыжке", 5, 1500, 250, 100, 50, 150) { }
+    }
+
+}
+
