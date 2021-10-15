@@ -1,0 +1,104 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp5
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            bool isWork = true;
+            Random random = new Random();
+            Zoo zoo = new Zoo(random);
+            while (isWork)
+            {
+                Console.WriteLine($"Вы в зоопарке, перед вами 4 вольера, к каому хотите подойти? \n\n1. Вольер 1\n2. Вольер 2\n3. Вольер 3\n4. Вольер 4\n5. Выход. ");
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        break;
+                    case "2":
+                        break;
+                    case "3":
+                        break;
+                    case "4":
+                        break;
+                    case "5":
+                        isWork = false;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        class Zoo
+        {
+            private int _countEnclosures;
+            private Random _random;
+
+            public Zoo(Random random)
+            {
+                _countEnclosures = 4;
+                _random = random;
+            }
+            private void CreateZoo()
+            {
+                for (int i = 0; i < _countEnclosures; i++)
+                {
+
+                }
+            }
+        }
+
+
+        class Animal
+        {
+            private string _name;
+            private string _animalNoises;
+            private int _genderMale;
+            private int _genderFemale;
+            private int _count;
+            private Random rand;
+
+            public Animal (Random random)
+            {
+                rand = random;
+                _count = rand.Next(5, 15);
+            }
+
+            private void CreateEnClosures()
+            {
+
+            }
+            private void GetCountGender()
+            {
+                if (_count % 2 == 1)
+                {
+                    _genderMale = _count / 2;
+                    _genderFemale = _count / 2 + 1;
+                }
+            }
+
+
+        }
+        enum NameAnimal
+        {
+            Wolf,
+            Penguin,
+            Cow,
+            Duck
+        }
+
+        enum NoisesAnimal 
+        { 
+            Auf,
+            Pisk,
+            Muuu,
+            krya
+        }
+    }
+}
