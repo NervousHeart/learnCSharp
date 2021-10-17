@@ -11,45 +11,60 @@ namespace ConsoleApp5
         static void Main(string[] args)
         {
             bool isWork = true;
-            Random random = new Random();
-            Zoo zoo = new Zoo(random);
+            Zoo zoo = new Zoo(4);
+
             while (isWork)
             {
-                Console.WriteLine($"Вы в зоопарке, перед вами 4 вольера, к каому хотите подойти? \n\n1. Вольер 1\n2. Вольер 2\n3. Вольер 3\n4. Вольер 4\n5. Выход. ");
-                switch (Console.ReadLine())
-                {
-                    case "1":
-                        break;
-                    case "2":
-                        break;
-                    case "3":
-                        break;
-                    case "4":
-                        break;
-                    case "5":
-                        isWork = false;
-                        break;
-                    default:
-                        break;
-                }
+                Console.WriteLine($"Вы в зоопарке, перед вами 4 вольера. Введите номер вальера к которому хотие подойти");
+                zoo.ShowInfo(Input());
+                Console.WriteLine("Чтобы выйти нажмите ESC, чтобы продолжить нажмите любую клавишу.");
+                if (Console.ReadKey().Key == ConsoleKey.Escape)
+                    isWork = false;
+                else
+                    Console.Clear();
+            }
+        }
+        
+        static int Input()
+        {
+            string userInput = Console.ReadLine();
+            bool successCount = int.TryParse(userInput, out int result);
+            if (successCount)
+                return result;
+            else
+            {
+                Console.WriteLine("Неправильный ввод, попробуйте заново.");
+                return 0;
             }
         }
 
         class Zoo
         {
             private int _countEnclosures;
+            private List<Animal> _enclosures;
             private Random _random;
 
-            public Zoo(Random random)
+            public Zoo(int countEncloseres)
             {
-                _countEnclosures = 4;
-                _random = random;
+                _countEnclosures = countEncloseres;
+                _random = new Random();
+                _enclosures = new List<Animal>();
+                CreateZoo();
             }
+
+            public void ShowInfo(int numberEncluser)
+            {
+                if (numberEncluser>0 &&numberEncluser<=_enclosures.Count)
+                    _enclosures.ElementAt(numberEncluser-1).ShowInfo();
+                else
+                    Console.WriteLine("Животных в вальере под таким номером нет");
+            }
+
             private void CreateZoo()
             {
                 for (int i = 0; i < _countEnclosures; i++)
                 {
-
+                    _enclosures.Add(new Animal(i, _random.Next(10, 21)));
                 }
             }
         }
@@ -57,22 +72,22 @@ namespace ConsoleApp5
 
         class Animal
         {
-            private string _name;
-            private string _animalNoises;
             private int _genderMale;
             private int _genderFemale;
             private int _count;
-            private Random rand;
-
-            public Animal (Random random)
+            private int _numberAnimal;
+            public Animal(int numberAnimal, int countAnimal)
             {
-                rand = random;
-                _count = rand.Next(5, 15);
+                _count = countAnimal;
+                _numberAnimal = numberAnimal;
+                GetCountGender();
             }
 
-            private void CreateEnClosures()
+            public void ShowInfo()
             {
-
+                string nameAnimal = Convert.ToString((NameAnimal)_numberAnimal);
+                string noiseAnimal = Convert.ToString((NoisesAnimal)_numberAnimal);
+                Console.WriteLine($"В вальере находтся {nameAnimal} в количестве {_count} шт. Из них {_genderFemale} женского пола, а {_genderMale} мужского. Иногда они издают звук {noiseAnimal}.");
             }
             private void GetCountGender()
             {
@@ -81,9 +96,12 @@ namespace ConsoleApp5
                     _genderMale = _count / 2;
                     _genderFemale = _count / 2 + 1;
                 }
+                else
+                {
+                    _genderFemale = _count / 2;
+                    _genderMale = _count / 2;
+                }
             }
-
-
         }
         enum NameAnimal
         {
@@ -93,8 +111,8 @@ namespace ConsoleApp5
             Duck
         }
 
-        enum NoisesAnimal 
-        { 
+        enum NoisesAnimal
+        {
             Auf,
             Pisk,
             Muuu,
