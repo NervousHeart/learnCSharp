@@ -1,0 +1,146 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp5
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            bool isWork = true;
+            Aquarium aquarium = new Aquarium(10);
+
+            while (isWork)
+            {
+                Console.Clear();
+                Console.WriteLine($"В аквариуме сейчас {aquarium.CountFish}/{aquarium.MaxCountFish} рыб.\n1. Добавить новую рыбку. 2. Пропустить время. 3. Выход\n");
+                aquarium.ShowInfo();
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        aquarium.AddFish();
+                        break;
+                    case "2":
+                        aquarium.SkipTime();
+                        break;
+                    case "3":
+                        isWork = false;
+                        break;
+                    default:
+                        break;
+                        Console.ReadKey();
+                }
+            }
+        }
+    }
+
+    class Aquarium
+    {
+        private List<Fish> _fishs;
+        private Random _random;
+
+        public int MaxCountFish { get; private set; }
+        public int CountFish { get; private set; }
+
+        public Aquarium(int maxCountFish)
+        {
+            MaxCountFish = maxCountFish;
+            _fishs = new List<Fish>();
+            _random = new Random();
+            Fill();
+            CountFish = _fishs.Count();
+        }
+        
+        public void SkipTime()
+        {
+            for (int i = 0; i < CountFish; i++)
+            {
+                if (_fishs[i].Age > 5)
+                {
+                    _fishs.RemoveAt(i);
+                    CountFish--;
+                }
+                else
+                {
+                    _fishs[i].ChangeAge();
+                }
+            }
+        }
+
+        public void AddFish()
+        {
+            if (CountFish < MaxCountFish)
+            {
+                _fishs.Add(new Fish(_random));
+                CountFish++;
+            }
+            else
+            {
+                Console.WriteLine("Нет места для новой рыбы.");
+                Console.ReadKey();
+            }
+        }
+
+        public void ShowInfo()
+        {
+            foreach (var fish in _fishs)
+            {
+                fish.ShowInfo();
+            }
+        }
+
+        private void Fill()
+        {
+            for (int i = 0; i < MaxCountFish; i++)
+            {
+                _fishs.Add(new Fish(_random));
+            }
+        }
+    }
+
+    class Fish
+    {
+        private string _name;
+        private Random _random;
+
+        public int Age { get; private set; }
+
+        public Fish(Random random)
+        {
+            _random = random;
+            _name = GetName();
+            Age = random.Next(1,5);
+        }
+
+        public void ShowInfo()
+        {
+            if (Age>5)
+                Console.WriteLine($"{_name} погибла и отправилась в унитаз.");
+            else
+                Console.WriteLine($"{_name} спокойно себе плавает. Её возраст: {Age}.");
+        }
+        
+        public void ChangeAge()
+        {
+            Age++;
+        }
+
+        private string GetName()
+        {
+            int countName = Enum.GetValues(typeof(NameFish)).Length;
+            return Convert.ToString((NameFish)_random.Next(0, countName));
+        }
+    }
+
+    enum NameFish
+    {
+        Scalar,
+        Barbus,
+        Danio,
+        Ancistrus,
+        Ternetia
+    }
+}
