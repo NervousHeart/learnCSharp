@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +16,9 @@ namespace ConsoleApp4
 
             while (isWork)
             {
-                supermarket.ShowInfo();
+                Console.WriteLine($"В супермаркете перед кассой очеред из {supermarket.CountClients} людей. \nВ кассе магазина денег {supermarket.Money}\n" +
+                $"Перед вами клиент номер {supermarket.NumberClient}: \n1. Пробить товары \n2. Посмотреть корзину клиента \n3. Убрать один продукт" +
+                $"\n4. Уволиться и закрыть магазин, решив стать программистом");
 
                 switch (Console.ReadLine())
                 {
@@ -25,10 +26,10 @@ namespace ConsoleApp4
                         supermarket.SellProducts();
                         break;
                     case "2":
-                        supermarket.ShowBasket();
+                        supermarket.ShowBasketServicedClient();
                         break;
                     case "3":
-                        supermarket.DeliteProduct();
+                        supermarket.DeliteProductServicedClient();
                         break;
                     case "4":
                         isWork = false;
@@ -44,40 +45,26 @@ namespace ConsoleApp4
 
     class Supermarket
     {
-        private int _countClients;
-        private int _numberClient;
         private Random _random;
         private Queue<Client> _clients;
 
+        public int CountClients { get; private set; }
+        public int NumberClient { get; private set; }
         public int Money { get; private set; }
 
         public Supermarket(Random random)
         {
             _random = random;
-            _countClients = _random.Next(5, 11);
-            _numberClient = 1;
+            CountClients = _random.Next(5, 11);
+            NumberClient = 1;
             Money = 0;
-            _clients = new Queue<Client>(_countClients);
+            _clients = new Queue<Client>(CountClients);
             CreateQueue();
         }
 
-        private void CreateQueue()
+        public void ShowBasketServicedClient()
         {
-            for (int i = 0; i < _countClients; i++)
-            {
-                _clients.Enqueue(new Client(i + 1, _random));
-            }
-        }
-        public void ShowInfo()
-        {
-            Console.WriteLine($"В супермаркете перед кассой очеред из {_clients.Count} людей. \nВ кассе магазина денег {Money}\n" +
-            $"Перед вами клиент номер {_numberClient}: \n1. Пробить товары \n2. Посмотреть корзину клиента \n3. Убрать один продукт" +
-            $"\n4. Уволиться и закрыть магазин, решив стать программистом");
-        }
-
-        public void ShowBasket() 
-        {
-            if (_countClients>=1)
+            if (CountClients >= 1)
                 _clients.Peek().ShowBasket();
             else
                 Console.WriteLine("Клиентов нет как и корзин");
@@ -85,27 +72,37 @@ namespace ConsoleApp4
 
         public void SellProducts()
         {
-            if (_countClients>=1)
+            if (CountClients >= 1)
             {
                 if (_clients.Peek().TryToPay())
                 {
                     Console.WriteLine("Клиент заплатил деньги и ушел.");
                     Money += _clients.Peek().ToPay();
                     _clients.Dequeue();
-                    _numberClient += 1;
-                    _countClients -= 1;
+                    NumberClient += 1;
+                    CountClients -= 1;
                 }
             }
             else
+            {
                 Console.WriteLine("Клиентов нет");
+            }    
         }
 
-        public void DeliteProduct()
+        public void DeliteProductServicedClient()
         {
-            if (_countClients>=1)
+            if (CountClients >= 1)
                 _clients.Peek().DeleteProduct();
             else
-                Console.WriteLine("Корзин нет и удалать нечего");
+                Console.WriteLine("Корзин нет и удалять нечего");
+        }
+
+        private void CreateQueue()
+        {
+            for (int i = 0; i < CountClients; i++)
+            {
+                _clients.Enqueue(new Client(i + 1, _random));
+            }
         }
     }
 
@@ -149,7 +146,9 @@ namespace ConsoleApp4
         public bool TryToPay()
         {
             if (_money >= _costAllProducts)
+            {
                 return true;
+            }
             else
             {
                 Console.WriteLine("У клиента не хватает денег и он просит убрать один товар из корзины;");
