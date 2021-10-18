@@ -1,0 +1,271 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp5
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Battlefield battlefield = new Battlefield(5, 5);
+            battlefield.ShowInfo();
+            Console.ReadKey();
+
+            while (battlefield.CanFight())
+            {
+                battlefield.Fight();
+            }
+        }
+    }
+
+    class Battlefield
+    {
+        private Squad _squad1;
+        private Squad _squad2;
+        private Random _random;
+
+        public Battlefield(int countFightersTeam1, int countFightersTeam2)
+        {
+            _random = new Random();
+            _squad1 = new Squad(countFightersTeam1, _random);
+            _squad2 = new Squad(countFightersTeam2, _random);
+        }
+
+        public void ShowInfo()
+        {
+            _squad1.ShowInfoLeft();
+            _squad2.ShowInfoRight(_squad2);
+        }
+        
+        public bool CanFight()
+        {
+            if (_squad1.CanFight && _squad2.CanFight)
+            {
+                return true;
+            }
+            else
+            {
+                if (_squad1.CanFight != true)
+                {
+                    Console.WriteLine("Команда 2 победила!");
+                    return false;
+                }
+                else
+                {
+                    Console.WriteLine("Команда 1 победила!");
+                    return false;
+                }
+            }
+        }
+
+        public void Fight()
+        {
+            ShowInfo();
+            _squad1.Attack(_squad2);
+            _squad1.DeliteCorpse();
+            Console.ReadKey();
+            Console.Clear();
+            ShowInfo();
+            _squad2.Attack(_squad1);
+            _squad2.DeliteCorpse();
+            Console.ReadKey() ;
+            Console.Clear();
+        }
+
+
+    }
+
+    class Squad
+    {
+        private int _countFighters;
+        private List<Fighter> _fighters;
+        private Random _random;
+
+        public bool CanFight { get; private set; }
+
+        public Squad(int countFighters, Random random)
+        {
+            _random = random;
+            _countFighters = countFighters;
+            _fighters = new List<Fighter>();
+            CanFight = true;
+            Create();
+        }
+
+        public void Attack(Squad squadOpponent)
+        {
+            if (squadOpponent._fighters.Count > 0 && _fighters.Count>0)
+            {
+                foreach (var _fighters in squadOpponent._fighters)
+                {
+                        int numberTarget = SearchTarget(squadOpponent);
+                        squadOpponent._fighters[numberTarget].GetHit(_fighters.TakeDamage());
+                }
+            }
+            else
+            {
+                Console.WriteLine("Выживших не осталось.");
+                squadOpponent.CanFight = false;
+            }
+        }
+
+        public void ShowInfoLeft()
+        {
+            Console.WriteLine("Команда 1: ");
+            foreach (var fighter in _fighters)
+            {
+                fighter.ShowInfo();
+            }
+        }
+
+        public void ShowInfoRight(Squad squad)
+        {
+            int left = Console.WindowWidth - 40;
+            int top = 0;
+            Console.SetCursorPosition(left, top++);
+            Console.Write("Команда 2: ");
+            for (int i = 0; i < squad._fighters.Count; i++)
+            {
+                Console.SetCursorPosition(left, top++);
+                squad._fighters[i].ShowInfo();
+            }
+        }
+
+        public void DeliteCorpse()
+        {
+            for (int i = 0; i < _fighters.Count; i++)
+            {
+                if (_fighters[i].Health <= 0)
+                    _fighters.RemoveAt(i);
+            }
+        }
+
+        private int SearchTarget(Squad squad)
+        {
+            int numberTarget = _random.Next(0, squad._fighters.Count);
+            return numberTarget;
+        }
+
+        private void Create()
+        {
+            _fighters.Add(new Commander(GetName(), _random));
+            _fighters.Add(new Medic(GetName(), _random));
+            for (int i = 0; i < _countFighters - 2; i++)
+            {
+                _fighters.Add(new Fighter(GetName(), _random));
+            }
+        }
+
+        private string GetName()
+        {
+            int countName = Enum.GetValues(typeof(NameSquad)).Length;
+            string name = Convert.ToString((NameSquad)_random.Next(0, countName));
+            return name;
+        }
+
+    }
+
+    class Fighter
+    {
+        private string _name;
+        private int _nativeHealth;
+        private int _damage;
+        private Random _random;
+
+        public int Health { get; private set; }
+
+        public Fighter(string name, Random random)
+        {
+            _name = name;
+            _random = random;
+            _damage = _random.Next(20, 41);
+            Health = _random.Next(100, 151);
+            _nativeHealth = Health;
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"{_name}. HP: {Health}/{_nativeHealth}. {GetPost()}.");
+        }
+
+        public int TakeDamage()
+        {
+            Console.WriteLine($"{_name} стреляет на {_damage} урона.");
+            return _damage;
+        }
+
+        public void GetHit(int damage)
+        {
+            Console.WriteLine($"{_name} получил урон {damage}");
+            Health -= damage;
+        }
+
+        public virtual string GetPost()
+        {
+            return "Рядовой";
+        }
+
+    }
+
+    class Commander : Fighter
+    {
+        private int _health;
+        private int _damageAura;
+
+        public Commander(string name, Random random) : base(name, random)
+        {
+            _health = random.Next(75, 101);
+            _damageAura = random.Next(10, 31);
+        }
+
+        public int CreateAuraCommander()
+        {
+            return _damageAura;
+        }
+
+        public override string GetPost()
+        {
+            return "Командир";
+        }
+
+    }
+
+    class Medic : Fighter
+    {
+        private int _health;
+        private int _hillPower;
+        public Medic(string name, Random random) : base(name, random)
+        {
+            _health = random.Next(150, 201);
+            _hillPower = random.Next(50, 76);
+        }
+
+        public int Hill()
+        {
+            return _hillPower;
+        }
+
+        public override string GetPost()
+        {
+            return "Медик";
+        }
+
+    }
+
+    enum NameSquad
+    {
+        Ivan,
+        Boris,
+        Sergei,
+        Alexei,
+        Dmitrii,
+        Max,
+        Jorj,
+        Harry,
+        Patrick,
+        Alex
+    }
+}
