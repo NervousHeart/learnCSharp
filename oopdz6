@@ -25,7 +25,7 @@ namespace IJuniorDZ
                         arena.SelectFighter();
                         break;
                     case "2":
-                        if (arena.isChoisenFighters)
+                        if (arena.FightersChoisen)
                             arena.StartFight();
                         else
                             Console.WriteLine("Выберите сначала бойцов.");
@@ -47,19 +47,21 @@ namespace IJuniorDZ
         private Warrior _fighter1;
         private Warrior _fighter2;
 
-        public bool isChoisenFighters { get; private set; }
+        public bool FightersChoisen  { get; private set; }
+
         public Arena(List<Warrior> warriors)
         {
             _warriors = warriors;
-            isChoisenFighters = false;
+            FightersChoisen = false;
             _fighter1 = null;
             _fighter2 = null;
         }
+
         public void StartFight()
         {
             Console.Clear();
             ShowInfo();
-            Console.WriteLine("\n") ;
+            Console.WriteLine("\n");
             while (_fighter1.Health > 0 && _fighter2.Health > 0)
             {
                 _fighter1.Attack(_fighter2);
@@ -69,27 +71,38 @@ namespace IJuniorDZ
                 Console.ReadKey();
             }
             if (_fighter1.Health <= 0)
+            {
                 Console.WriteLine($"Боец {_fighter1.Name} пал.");
+                _warriors.Remove(_fighter1);
+                _fighter2.GetHeal();
+            }
             else
+            {
                 Console.WriteLine($"Боец {_fighter2.Name} пал.");
+                _warriors.Remove(_fighter2);
+                _fighter1.GetHeal();
+            }
             Console.ReadKey();
         }
+
         public void SelectFighter()
         {
-            isChoisenFighters = false;
-            while (!isChoisenFighters)
+            FightersChoisen = false;
+            while (!FightersChoisen)
             {
                 Console.Clear();
                 ShowAllFighters();
                 Console.WriteLine("Введите номер бойца 1: ");
-                _fighter1 = GetFighter(Input());
+                _fighter1 = GetFighter(GetNumber());
                 Console.WriteLine("Введите номер бойца 2: ");
-                _fighter2 = GetFighter(Input());
+                _fighter2 = GetFighter(GetNumber());
                 ShowInfo();
                 Console.ReadKey();
-                isChoisenFighters = true;
+                if (_fighter1 != null && _fighter2 != null)
+                    FightersChoisen = true;
+                else
+                    FightersChoisen = false;
             }
-
         }
 
         private void ShowInfo()
@@ -103,6 +116,7 @@ namespace IJuniorDZ
             else
                 Console.Write("\nБоец номер 2: не выбран");
         }
+
         private void ShowAllFighters()
         {
             for (int i = 0; i < _warriors.Count; i++)
@@ -110,23 +124,38 @@ namespace IJuniorDZ
                 Console.WriteLine(i + 1 + " - " + _warriors[i].Name); ;
             }
         }
+
         private Warrior GetFighter(int userInput)
         {
             if (userInput - 1 < _warriors.Count && userInput - 1 >= 0)
-                return _warriors[userInput - 1];
+            {
+                if (_warriors[userInput-1] != _fighter1)
+                {
+                    return _warriors[userInput - 1];
+                }
+                else
+                {
+                    Console.WriteLine("Такой боец уже выбран, попробуйте заново");
+                    _fighter1 = null;
+                    _fighter2 = null;
+                    return null;
+                }
+            }
             else
             {
                 Console.WriteLine("Бойца под таким номером нет");
                 return null;
             }
-
         }
-        private int Input()
+
+        private int GetNumber()
         {
             string userInput = Console.ReadLine();
             bool successCount = int.TryParse(userInput, out int result);
             if (successCount)
+            {
                 return result;
+            }
             else
             {
                 Console.WriteLine("Неправильный ввод, попробуйте заново.");
@@ -159,7 +188,6 @@ namespace IJuniorDZ
             rand = new Random();
         }
 
-
         public void Attack(Warrior opponent)
         {
             if (TryPunch() && TryUseEnergy())
@@ -170,12 +198,22 @@ namespace IJuniorDZ
                     opponent.GetDamage(TakeDamage());
             }
             else if (TryPunch())
+            {
                 opponent.GetDamage(TakeDamage());
+            }
             else
+            {
                 Console.Write($"{Name} промахивается");
+            }
 
             Console.WriteLine();
         }
+
+        public void GetHeal()
+        {
+            Health = _nativeHealth;
+        }
+
         public void ShowHealth()
         {
             if (Health > _nativeHealth / 1.5)
@@ -185,19 +223,23 @@ namespace IJuniorDZ
             else if (Health > _nativeHealth / 5)
                 Console.WriteLine($"{Name} при смерти\n");
         }
+
         public virtual int TakeDamage()
         {
             Console.Write($"{Name} бьет противника");
             return Damage;
         }
+
         public virtual void GetDamage(int damage)
         {
             Health -= damage;
         }
+
         public virtual int UseSpecialAbility()
         {
-            return Damage*2;
+            return Damage * 2;
         }
+
         private bool TryPunch()
         {
             if (_accuracy * rand.Next(7, 21) > 60)
@@ -205,6 +247,7 @@ namespace IJuniorDZ
             else
                 return false;
         }
+
         private bool TryUseEnergy()
         {
             if (Energy >= _costSpell)
@@ -217,70 +260,80 @@ namespace IJuniorDZ
     class Mage : Warrior
     {
         public Mage(string name) : base(name, 5, 500, 500, 45, 150) { }
+
         public override int UseSpecialAbility()
         {
             Console.Write("Маг кастует огнненный шар");
-            return base.Damage*6;
+            return base.Damage * 6;
         }
     }
 
     class Paladin : Warrior
     {
         private int _armor;
+
         public Paladin(string name) : base(name, 6, 1000, 300, 100, 100) { int _armor = 30; }
+
         public override void GetDamage(int damage)
         {
             base.GetDamage(damage - _armor); ;
         }
+
         public override int UseSpecialAbility()
         {
             Console.Write("Паладин молится и восстанавливает себе здоровье");
             GetDamage(-base.Damage);
             return 0;
-        } 
+        }
     }
 
     class Archer : Warrior
     {
         public Archer(string name) : base(name, 7, 600, 400, 70, 100) { }
+
         public override int UseSpecialAbility()
         {
             Console.Write("Лучник выпускает сразу три стрелы");
-            return base.Damage*3;
+            return base.Damage * 3;
         }
     }
 
     class Assasin : Warrior
     {
         public Assasin(string name) : base(name, 8, 500, 600, 90, 150) { }
+
         public override int UseSpecialAbility()
         {
             Console.Write("Асасин оказыввается за спиной противника и наносит точный удар");
-            return base.Damage*3;
+            return base.Damage * 3;
         }
     }
 
     class Berserk : Warrior
     {
         private bool inRage = false;
+
         public Berserk(string name) : base(name, 5, 1200, 250, 110, 50) { }
+
         public override int UseSpecialAbility()
         {
             Console.Write("Варвар жертвует своим здоровьем в обмен на увеличение урона");
             GetDamage(base.Damage);
-            
+            inRage = true;
             return base.Damage;
         }
+
         public override int TakeDamage()
         {
             if (inRage)
             {
-                return base.TakeDamage() + this.Damage;
                 inRage = false;
+                return base.TakeDamage() + this.Damage;
             }
             else
+            {
                 return base.TakeDamage();
+            }
         }
     }
-
 }
