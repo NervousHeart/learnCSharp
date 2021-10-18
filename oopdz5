@@ -69,13 +69,14 @@ namespace ConsoleApp30
             Console.WriteLine("Список поездов готовых к отправке: ");
             for (int i = 0; i < _trains.Count; i++)
             {
-                Console.Write(i+1);
+                Console.Write(i + 1);
                 _trains[i].ShowInfo();
             }
             Console.WriteLine("Список путей: ");
-            foreach (var railway in _railways)
+            for (int i = 0; i < _railways.Count; i++)
             {
-                railway.ShowInfo();
+                Console.Write(i + 1 + ". ");
+                _railways[i].ShowInfo();
             }
         }
 
@@ -83,15 +84,14 @@ namespace ConsoleApp30
         {
             foreach (var railway in _railways)
             {
-                if(railway.TrainLeaving)
-                railway.SkipTime();
+                if (railway.TrainLeaving)
+                    railway.SkipTime();
             }
         }
 
         public void CreateNewRailway()
         {
             _railways.Add(new Railway());
-            _railways.Last().CreateRailway();
         }
 
         public void CreateNewTrain()
@@ -99,7 +99,7 @@ namespace ConsoleApp30
             if (_ticketSoldOut)
             {
                 _trains.Add(new Train(_tickits));
-                _trains.Last().CreateTrain();
+                _trains.Last().Create();
                 _ticketSoldOut = false;
                 _trainCreated = false;
             }
@@ -116,17 +116,19 @@ namespace ConsoleApp30
             {
                 _tickits = _random.Next(100, 301);
                 _ticketSoldOut = true;
-                Console.WriteLine($"Вы продали {_tickits} билетов" );
+                Console.WriteLine($"Вы продали {_tickits} билетов");
                 _trainCreated = true;
             }
             else
+            {
                 Console.WriteLine("Сначала сформируйте поезд для пассажиров, купивших билеты");
+            }
             Console.ReadKey();
         }
 
         public void SendTrain()
         {
-            if (_railways.Count >0 && _trains.Count>0)
+            if (_railways.Count > 0 && _trains.Count > 0)
             {
                 bool trainSending = false;
                 while (trainSending != true)
@@ -134,11 +136,11 @@ namespace ConsoleApp30
                     Console.Clear();
                     ShowInfo();
                     Console.WriteLine("Выберите номер поезда: ");
-                    int numberTrain = Input()-1;
+                    int numberTrain = GetNumber() - 1;
                     Console.WriteLine("Выберите номер пути: ");
-                    int numberRailway = Input()-1;
+                    int numberRailway = GetNumber() - 1;
 
-                    if (_railways.ElementAt(numberRailway)!=null && _trains.ElementAt(numberTrain)!=null)
+                    if (_railways.ElementAt(numberRailway) != null && _trains.ElementAt(numberTrain) != null)
                     {
                         if (_railways.ElementAt(numberRailway).TrainLeaving != true)
                         {
@@ -147,23 +149,30 @@ namespace ConsoleApp30
                             _trains.RemoveAt(numberTrain);
                         }
                         else
+                        {
                             Console.WriteLine("Данный путь уже занят");
+                        }
                     }
                     else
+                    {
                         Console.WriteLine("Неправильно введены данные");
+                    }
                 }
             }
-            else
+            else 
+            { 
                 Console.WriteLine("Неудача! Проверьте наличие готовых поездов и путей");
+            }
         }
 
-        private int Input()
+        private int GetNumber()
         {
-
             string userInput = Console.ReadLine();
             bool successCount = int.TryParse(userInput, out int result);
             if (successCount)
+            {
                 return result;
+            }
             else
             {
                 Console.WriteLine("Неправильный ввод, попробуйте заново.");
@@ -177,7 +186,7 @@ namespace ConsoleApp30
         private int _countTrainCar;
         private int _countPassenger;
         private int _countAllPlaces;
-        private Random rand = new Random();
+        private Random random = new Random();
 
         public Train(int countPassenger)
         {
@@ -189,7 +198,7 @@ namespace ConsoleApp30
             Console.WriteLine($". Поезд с пассажирами {_countPassenger}");
         }
 
-        public void CreateTrain()
+        public void Create()
         {
             bool trainCreated = false;
             while (trainCreated != true)
@@ -198,14 +207,14 @@ namespace ConsoleApp30
                 Console.WriteLine($"Количество поссажиров - {_countPassenger} \nВ {_countTrainCar} вагонах есть место для {_countAllPlaces} пассажиров \n\n" +
                     $"1. Добавить новый вагон. \n2. Создать поезд.");
 
-                switch (Input())
+                switch (GetNumber())
                 {
                     case 1:
                         _countTrainCar += 1;
-                        _countAllPlaces += rand.Next(50, 100);
+                        _countAllPlaces += random.Next(50, 100);
                         break;
                     case 2:
-                        if (_countPassenger>=_countAllPlaces&&_countPassenger!=0)
+                        if (_countPassenger >= _countAllPlaces && _countPassenger != 0)
                         {
                             Console.WriteLine("Не всем людям хватило место, они в ярости! Поезд вернули, а вас ждет штраф!");
                             _countAllPlaces = 0;
@@ -226,12 +235,14 @@ namespace ConsoleApp30
             }
         }
 
-        private int Input()
+        private int GetNumber()
         {
             string userInput = Console.ReadLine();
             bool successCount = int.TryParse(userInput, out int result);
             if (successCount)
+            {
                 return result;
+            }
             else
             {
                 Console.WriteLine("Неправильный ввод, попробуйте заново.");
@@ -244,15 +255,17 @@ namespace ConsoleApp30
     {
         private List<string> _pointsWay;
         private int _timeToTravel;
-        
+
         public bool TrainLeaving { get; private set; }
+
         public Railway()
         {
             _pointsWay = new List<string>();
             TrainLeaving = false;
             _timeToTravel = 0;
+            Create();
         }
-        
+
         public void SendTrain()
         {
             TrainLeaving = true;
@@ -266,27 +279,13 @@ namespace ConsoleApp30
                 TrainLeaving = false;
             }
             else
+            {
                 _timeToTravel -= 10;
-        }
-
-        public void CreateRailway()
-        {
-            Console.WriteLine("Введите точку отправления: ");
-            string point1 = Console.ReadLine();
-            Console.WriteLine("Введите точку прибытия: ");
-            string point2 = Console.ReadLine();
-            Console.WriteLine("Введите время в пути в цифрах");
-            _timeToTravel = Input();
-            _pointsWay.Add(point1);
-            _pointsWay.Add(point2);
+            }
         }
 
         public void ShowInfo()
         {
-            for (int i = 0; i < _pointsWay.Count; i+=2)
-            {
-                Console.Write(i+1 + ". ");
-            }
             Console.Write($"Направление {_pointsWay.First()} - {_pointsWay.Last()}. Время в пути: ");
             if (TrainLeaving)
                 Console.Write($"{_timeToTravel} \n");
@@ -294,17 +293,31 @@ namespace ConsoleApp30
                 Console.Write("Путь свободен.\n");
         }
 
-        private int Input()
+        private int GetNumber()
         {
             string userInput = Console.ReadLine();
             bool successCount = int.TryParse(userInput, out int result);
             if (successCount)
+            {
                 return result;
+            }
             else
             {
                 Console.WriteLine("Неправильный ввод, попробуйте заново.");
                 return 0;
             }
+        }
+
+        private void Create()
+        {
+            Console.WriteLine("Введите точку отправления: ");
+            string point1 = Console.ReadLine();
+            Console.WriteLine("Введите точку прибытия: ");
+            string point2 = Console.ReadLine();
+            Console.WriteLine("Введите время в пути в цифрах");
+            _timeToTravel = GetNumber();
+            _pointsWay.Add(point1);
+            _pointsWay.Add(point2);
         }
     }
 }
