@@ -15,8 +15,8 @@ namespace ConsoleApp5
 
             while (isWork)
             {
-                Console.WriteLine($"Вы в зоопарке, перед вами 4 вольера. Введите номер вальера к которому хотие подойти");
-                zoo.ShowInfo(Input());
+                Console.WriteLine($"Вы в зоопарке, перед вами {zoo.CountEnclosures} вольера. Введите номер вальера к которому хотие подойти");
+                zoo.ShowInfo(GetNumber()-1);
                 Console.WriteLine("Чтобы выйти нажмите ESC, чтобы продолжить нажмите любую клавишу.");
                 if (Console.ReadKey().Key == ConsoleKey.Escape)
                     isWork = false;
@@ -24,8 +24,8 @@ namespace ConsoleApp5
                     Console.Clear();
             }
         }
-        
-        static int Input()
+
+        static int GetNumber()
         {
             string userInput = Console.ReadLine();
             bool successCount = int.TryParse(userInput, out int result);
@@ -40,69 +40,121 @@ namespace ConsoleApp5
 
         class Zoo
         {
-            private int _countEnclosures;
-            private List<Animal> _enclosures;
+            private List<Enclosur> _enclosures;
             private Random _random;
+
+            public int CountEnclosures { get; private set; }
 
             public Zoo(int countEncloseres)
             {
-                _countEnclosures = countEncloseres;
+                CountEnclosures = countEncloseres;
                 _random = new Random();
-                _enclosures = new List<Animal>();
+                _enclosures = new List<Enclosur>();
                 CreateZoo();
             }
 
-            public void ShowInfo(int numberEncluser)
+            public void ShowInfo(int numberEnclosur)
             {
-                if (numberEncluser>0 &&numberEncluser<=_enclosures.Count)
-                    _enclosures.ElementAt(numberEncluser-1).ShowInfo();
-                else
-                    Console.WriteLine("Животных в вальере под таким номером нет");
+                for (int i = 0; i < _enclosures.Count; i++)
+                {
+                    if (numberEnclosur == i)
+                        _enclosures[i].ShowInfo();
+                }
             }
 
             private void CreateZoo()
             {
-                for (int i = 0; i < _countEnclosures; i++)
+                for (int i = 0; i < CountEnclosures; i++)
                 {
-                    _enclosures.Add(new Animal(i, _random.Next(10, 21)));
+                    _enclosures.Add(new Enclosur(i, i, _random));
                 }
             }
         }
 
-
-        class Animal
+        class Enclosur
         {
-            private int _genderMale;
-            private int _genderFemale;
-            private int _count;
+            private List<Animal> _animals;
+            private int _countAnimal;
+            private int _countMale;
+            private int _countFemale;
+            private Random _random;
             private int _numberAnimal;
-            public Animal(int numberAnimal, int countAnimal)
+            private int _numberEnclosur;
+
+            public Enclosur(int numberAnimal, int numberEnclosur, Random random)
             {
-                _count = countAnimal;
+                _animals = new List<Animal>();
+                _countAnimal = random.Next(10, 21) ;
                 _numberAnimal = numberAnimal;
-                GetCountGender();
+                _numberEnclosur = numberEnclosur;
+                _countMale = 0;
+                _countFemale = 0;
+                Populate();
+                CalculateAnimalGender();
             }
 
             public void ShowInfo()
             {
-                string nameAnimal = Convert.ToString((NameAnimal)_numberAnimal);
-                string noiseAnimal = Convert.ToString((NoisesAnimal)_numberAnimal);
-                Console.WriteLine($"В вальере находтся {nameAnimal} в количестве {_count} шт. Из них {_genderFemale} женского пола, а {_genderMale} мужского. Иногда они издают звук {noiseAnimal}.");
+                Console.WriteLine($"Перед вами вальер номер {_numberEnclosur+1}. Сейчас здесь находятся {_countAnimal} животных. Из них {_countMale} мужских особей и {_countFemale} женских.");
+                _animals.ElementAt(_numberAnimal).ShowInfo();
             }
-            private void GetCountGender()
+
+            public bool CheckAvailabilityAnimal()
             {
-                if (_count % 2 == 1)
+                if (_numberAnimal >= 0 && _numberAnimal <= Enum.GetValues(typeof(NameAnimal)).Length)
                 {
-                    _genderMale = _count / 2;
-                    _genderFemale = _count / 2 + 1;
+                    return true;
                 }
                 else
                 {
-                    _genderFemale = _count / 2;
-                    _genderMale = _count / 2;
+                    Console.WriteLine("Животных еще не привезли");
+                    return false;
+                }
+            }
+
+            private void CalculateAnimalGender()
+            {
+                if (_countAnimal % 2 == 1)
+                {
+                    _countFemale = _countAnimal / 2;
+                    _countMale = _countAnimal / 2 + 1;
+                }
+                else
+                {
+                    _countFemale = _countAnimal / 2;
+                    _countMale = _countAnimal / 2;
+                }
+            }
+
+            private void Populate()
+            {
+                if (CheckAvailabilityAnimal())
+                {
+                    for (int i = 0; i < _countAnimal; i++)
+                    {
+                        _animals.Add(new Animal(_numberAnimal));
+                    }
                 }
             }
         }
+
+        class Animal
+        {
+            private int _numberAnimal;
+
+            public Animal(int numberAnimal)
+            {
+                _numberAnimal = numberAnimal;
+            }
+
+            public void ShowInfo()
+            {
+                    string nameAnimal = Convert.ToString((NameAnimal)_numberAnimal);
+                    string noiseAnimal = Convert.ToString((NoisesAnimal)_numberAnimal);
+                    Console.WriteLine($"В вальере находится {nameAnimal} и издает звук {noiseAnimal}");
+            }
+        }
+
         enum NameAnimal
         {
             Wolf,
