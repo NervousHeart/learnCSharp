@@ -6,71 +6,404 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp5
 {
+
+    //У вас есть автосервис, в который приезжают люди, чтобы починить свои автомобили.
+    //У вашего автосервиса есть баланс денег и склад деталей.
+    //Когда приезжает автомобиль, у него сразу ясна его поломка, и эта поломка отображается у вас в консоли вместе с ценой за починку(цена за починку складывается из цены детали + цена за работу).
+    //Поломка всегда чинится заменой детали, но количество деталей ограничено тем, что находится на вашем складе деталей.
+    //Если у вас нет нужной детали на складе, то вы можете отказать клиенту, и в этом случае вам придется выплатить штраф.
+    //Если вы замените не ту деталь, то вам придется возместить ущерб клиенту.
+    //За каждую удачную починку вы получаете выплату за ремонт, которая указана в чек-листе починки.
     class Program
     {
         static void Main(string[] args)
         {
             Random random = new Random();
-            Client client = new Client(random);
-            client.ShowInfo();
-            Console.ReadKey();
+            Storage storage = new Storage();
+            CarServise carServise = new CarServise(storage);
+            Shop shop = new Shop(random);
+            bool isWork = true;
+
+            while (isWork)
+            {
+
+                Console.Clear();
+                Console.WriteLine($"Автосервис \"Раз-два и готово\" готов принимать клиентов. Касса сервиса: {carServise.Money}\nТекущий клиент:");
+                carServise.ShowBreakDown();
+                Console.WriteLine($"\n\n1. Запустить клиента. \n2. Заменить деталь. \n3. Проверить склад. \n4. Купить новую деталь. \n5. Выход.");
+
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        carServise.InviteClient();
+                        carServise.GetTotalPrice(shop);
+                        break;
+                    case "2":
+                        carServise.ChangeDetail();
+                        break;
+                    case "3":
+                        carServise.ShowDetailsInStorage();
+                        break;
+                    case "4":
+                        if (carServise.HaveClient)
+                            Console.WriteLine("У вас нет времени бежать в магазин, обслужите сначала клиента");
+                        else
+                            shop.MakeDeal(carServise, storage);
+                        break;
+                    case "5":
+                        isWork = false;
+                        break;
+                    default:
+                        break;
+                }
+                Console.ReadKey();
+            }
+
+
         }
     }
 
     class CarServise
     {
-        private int _money;
-        
+        private int _penalty;
+        private int _priceOfWork;
+        private Random _random;
+        private List<Client> _clients;
+        private Storage _storage;
+        private int _totalPrice;
+
+        public bool HaveClient { get; private set; }
+        public int Money { get; private set; }
+
+
+        public CarServise(Storage storage)
+        {
+            _random = new Random();
+            _storage = storage;
+            _priceOfWork = _random.Next(100, 401);
+            HaveClient = false;
+            _penalty = 200;
+            Money = 2500;
+            _clients = new List<Client>();
+        }
+
+        public void InviteClient()
+        {
+            if (_clients.Count > 0)
+            {
+                Console.WriteLine("Обслужите сначала первого клиента");
+            }
+            else
+            {
+                _clients.Add(new Client(_random));
+                HaveClient = true;
+            }
+        }
+
+        public void ShowDetailsInStorage()
+        {
+            Console.WriteLine("На складе лежат: ");
+            _storage.ShowAllDetails();
+            Console.ReadKey();
+        }
+
+        public void ChangeDetail()
+        {
+            Console.WriteLine("Введите номер детали: ");
+            int numberDetail = GetNumber() - 1;
+            Details detail = _storage.GetDetail(numberDetail);
+            if (detail != null)
+            {
+                if (_clients.Last().CheckRepair(detail, numberDetail))
+                {
+                    Console.WriteLine("Ремонт прошел удачно! Клиент заплатил деньги и уехал довольный.");
+                    Money += _clients.Last().Pay(_totalPrice);
+                    _clients.Clear();
+                    HaveClient = false;
+                }
+                else
+                {
+                    Console.WriteLine("Вы поменяли не ту деталь! Клиент в ярости и вам пришлось заплатить ему компенсацию!");
+                    _clients.Last().ReceiveCompensation(_totalPrice);
+                    _clients.Clear();
+                    HaveClient = false;
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Клиент ушел в другой сервис. Вам выставлен штраф {_penalty}");
+                PayPenalty();
+                _clients.Clear();
+                HaveClient = false;
+            }
+
+        }
+
+        public void ShowBreakDown()
+        {
+            if (HaveClient)
+            {
+                _clients.Last().ShowInfo();
+                Console.Write($" - это будет стоить {_totalPrice}");
+            }
+            else
+            {
+                Console.WriteLine("Сначала запустите клиента");
+            }
+        }
+
+        public int PayForDetail(int price)
+        {
+            Money -= price;
+            return price;
+        }
+
+        public int GetTotalPrice(Shop shop)
+        {
+            _totalPrice = shop.GetPrice(_clients.Last().NumberBrokenDetail) + _priceOfWork;
+            return _totalPrice;
+        }
+
+        private void PayPenalty()
+        {
+            Money -= _penalty;
+        }
+
+        private void PayPenalty(Client client)
+        {
+            client.ReceiveCompensation(_totalPrice);
+            Money -= _totalPrice;
+        }
+
+        private int GetNumber()
+        {
+            string userInput = Console.ReadLine();
+            bool successCount = int.TryParse(userInput, out int result);
+            if (successCount)
+            {
+                return result;
+            }
+            else
+            {
+                Console.WriteLine("Неправильный ввод, попробуйте заново.");
+                return 0;
+            }
+        }
+
     }
 
-    class Warehouse
+    class Storage
     {
         private List<Details> _details;
-        private int _count;
+
+        public Storage()
+        {
+            _details = new List<Details>();
+        }
+
+        public Details GetDetail(int number)
+        {
+
+                if (CheckAvailabilityDetail(number))
+                {
+                    Details detail = _details[number];
+                    _details.RemoveAt(number);
+                    return detail;
+                }
+                else
+                {
+                    Console.WriteLine("Такой детали нет");
+                    return null;
+                }
+        }
+
+        public void AddDetail(int number, int cost)
+        {
+            _details.Add(new Details(number, cost));
+        }
+
+
+        public void ShowAllDetails()
+        {
+            for (int i = 0; i < _details.Count; i++)
+            {
+                _details[i].ShowInfo();
+            }
+        }
+
+        private bool CheckAvailabilityDetail(int number)
+        {
+            for (int i = 0; i < _details.Count; i++)
+            {
+                if (number==i)
+                    return true;
+            }
+            return false;
+        }
+
+    }
+
+    class Shop
+    {
+        private List<Details> _details;
+        private int _money;
+        private Random _random;
+
+        public Shop(Random random)
+        {
+            _money = 0;
+            _random = random;
+            _details = new List<Details>();
+            FillTheShop();
+        }
+
+        public void MakeDeal(CarServise carServise, Storage storage)
+        {
+            ShowAssortment();
+            Console.WriteLine("Введите номер детали: ");
+            int numberDetail = GetNumber() - 1;
+            if (CheckSolvency(carServise, numberDetail))
+            {
+                Console.WriteLine("поздравляю с покупкой!");
+                _money += carServise.PayForDetail(_details[numberDetail].Cost);
+                storage.AddDetail(numberDetail, _details[numberDetail].Cost);
+                _money += _details[numberDetail].Cost;
+            }
+            else
+            {
+                Console.WriteLine("Неудалось купить деталь");
+            }
+        }
+
+        public int GetPrice(int numberDetail)
+        {
+            return _details[numberDetail].Cost;
+        }
+
+        private bool CheckSolvency(CarServise carServise, int numberDetail)
+        {
+            if (numberDetail >= 0 && numberDetail < Enum.GetValues(typeof(NameDetails)).Length)
+            {
+                if (carServise.Money >= _details[numberDetail].Cost)
+                    return true;
+                else
+                    return false;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private void ShowAssortment()
+        {
+            foreach (var detail in _details)
+            {
+                detail.ShowInfo();
+            }
+        }
+
+        private void FillTheShop()
+        {
+            int countName = Enum.GetValues(typeof(NameDetails)).Length;
+            for (int i = 0; i < countName; i++)
+            {
+                _details.Add(new Details(i, _random.Next(300, 601)));
+            }
+        }
+
+        private int GetNumber()
+        {
+            string userInput = Console.ReadLine();
+            bool successCount = int.TryParse(userInput, out int result);
+            if (successCount)
+            {
+                return result;
+            }
+            else
+            {
+                Console.WriteLine("Неправильный ввод, попробуйте заново.");
+                return 0;
+            }
+        }
+
     }
 
     class Details
     {
         private string _name;
-        private int _cost;
-        private bool isBroken;
+        private int _number;
+
+        public bool IsBroken { get; private set; }
+        public int Cost { get; private set; }
+
+        public Details(int numberDetail, int cost)
+        {
+            IsBroken = false;
+            Cost = cost;
+            _number = numberDetail;
+            _name = GetName(numberDetail);
+        }
 
         public Details(int numberDetail)
         {
-            isBroken = false;
+            IsBroken = false;
             _name = GetName(numberDetail);
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"Деталь номер {_number+1}: {_name} стоимостью: {Cost}");
         }
 
         public void BrokeDetail()
         {
-            isBroken = true;
+            IsBroken = true;
         }
 
         private string GetName(int number)
         {
-            int countName = Enum.GetValues(typeof(NameDetails)).Length;
             return Convert.ToString((NameDetails)number);
         }
-
     }
 
     class Client
     {
         private int _money;
-        private int _numberBrokenDetail;
         private List<Details> _car;
+
+        public int NumberBrokenDetail { get; private set; }
 
         public Client(Random random)
         {
+            _money = 1000;
             _car = new List<Details>();
             CreateCar(random);
         }
 
+        public bool CheckRepair(Details detail, int numberDetail)
+        {
+            _car.Insert(numberDetail, detail);
+            if (_car[NumberBrokenDetail].IsBroken)
+                return false;
+            else
+                return true;
+        }
 
+        public void ReceiveCompensation(int money)
+        {
+            _money += money;
+        }
+
+        public int Pay(int cost)
+        {
+            _money -= cost;
+            return cost;
+        }
 
         public void ShowInfo()
         {
-            Console.WriteLine($"Клиент привез свою машину и говорит что у него сломано: {Convert.ToString((NameDetails)_numberBrokenDetail)}");
+            Console.WriteLine($"Клиент привез свою машину и говорит что у него сломано деталь номер: {NumberBrokenDetail + 1} - {Convert.ToString((NameDetails)NumberBrokenDetail)}");
         }
 
         private void CreateCar(Random random)
@@ -80,8 +413,8 @@ namespace ConsoleApp5
             {
                 _car.Add(new Details(i));
             }
-            _numberBrokenDetail = random.Next(0, countName);
-            _car.ElementAt(_numberBrokenDetail).BrokeDetail();
+            NumberBrokenDetail = random.Next(0, countName);
+            _car.ElementAt(NumberBrokenDetail).BrokeDetail();
         }
     }
 
@@ -93,5 +426,4 @@ namespace ConsoleApp5
         Фары,
         Тормоза
     }
-
 }
