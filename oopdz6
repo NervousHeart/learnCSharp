@@ -4,147 +4,244 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IJuniorDZ
+namespace ConsoleApp5
 {
+
+    //У вас есть автосервис, в который приезжают люди, чтобы починить свои автомобили.
+    //У вашего автосервиса есть баланс денег и склад деталей.
+    //Когда приезжает автомобиль, у него сразу ясна его поломка, и эта поломка отображается у вас в консоли вместе с ценой за починку(цена за починку складывается из цены детали + цена за работу).
+    //Поломка всегда чинится заменой детали, но количество деталей ограничено тем, что находится на вашем складе деталей.
+    //Если у вас нет нужной детали на складе, то вы можете отказать клиенту, и в этом случае вам придется выплатить штраф.
+    //Если вы замените не ту деталь, то вам придется возместить ущерб клиенту.
+    //За каждую удачную починку вы получаете выплату за ремонт, которая указана в чек-листе починки.
     class Program
     {
         static void Main(string[] args)
         {
+            Random random = new Random();
+            Storage storage = new Storage();
+            CarServise carServise = new CarServise(storage);
+            Shop shop = new Shop(random);
             bool isWork = true;
-            List<Warrior> warriors = new List<Warrior> { new Archer("Арчер"), new Paladin("Паладин"), new Mage("Маг"), new Assasin("Ассасин"), new Berserk("Берсерк") };
-            Arena arena = new Arena(warriors);
 
             while (isWork)
             {
+
                 Console.Clear();
-                Console.WriteLine("Вы на арене! \n1. Выбрать бойцов \n2. Начать бой \n3. Выход");
+                Console.WriteLine($"Автосервис \"Раз-два и готово\" готов принимать клиентов. Касса сервиса: {carServise.Money}\nТекущий клиент:");
+                carServise.ShowBreakDown();
+                Console.WriteLine($"\n1. Запустить клиента. \n2. Заменить деталь. \n3. Проверить склад. \n4. Купить новую деталь. \n5. Выход.");
 
                 switch (Console.ReadLine())
                 {
                     case "1":
-                        arena.SelectFighter();
+                        carServise.InviteClient();
                         break;
                     case "2":
-                        if (arena.FightersChoisen)
-                            arena.StartFight();
-                        else
-                            Console.WriteLine("Выберите сначала бойцов.");
                         break;
                     case "3":
+                        carServise.ShowDetailsInStorage();
+                        break;
+                    case "4":
+                        shop.MakeDeal(carServise, storage);
+                        break;
+                    case "5":
                         isWork = false;
                         break;
                     default:
                         break;
                 }
+                Console.ReadKey();
             }
+
 
         }
     }
 
-    class Arena
+    class CarServise
     {
-        private List<Warrior> _warriors;
-        private Warrior _fighter1;
-        private Warrior _fighter2;
+        private int _penalty;
+        private int _priceOfWork;
+        private int _totalPrice;
+        private bool _haveClient;
+        private Random _random;
+        private List<Client> _clients;
+        private Storage _storage;
 
-        public bool FightersChoisen  { get; private set; }
+        public int Money { get; private set; }
 
-        public Arena(List<Warrior> warriors)
+        public CarServise(Storage storage)
         {
-            _warriors = warriors;
-            FightersChoisen = false;
-            _fighter1 = null;
-            _fighter2 = null;
+            _random = new Random();
+            _storage = storage;
+            _priceOfWork = _random.Next(100,401);
+            _haveClient = false;
+            Money = 2000;
+            
+            _clients = new List<Client>();
         }
 
-        public void StartFight()
+        public void InviteClient()
         {
-            Console.Clear();
-            ShowInfo();
-            Console.WriteLine("\n");
-            while (_fighter1.Health > 0 && _fighter2.Health > 0)
+            if (_clients.Count > 0)
             {
-                _fighter1.Attack(_fighter2);
-                _fighter1.ShowHealth();
-                _fighter2.Attack(_fighter1);
-                _fighter2.ShowHealth();
-                Console.ReadKey();
-            }
-            if (_fighter1.Health <= 0)
-            {
-                Console.WriteLine($"Боец {_fighter1.Name} пал.");
-                _warriors.Remove(_fighter1);
-                _fighter2.GetHeal();
+                Console.WriteLine("Обслужите сначала первого клиента");
             }
             else
             {
-                Console.WriteLine($"Боец {_fighter2.Name} пал.");
-                _warriors.Remove(_fighter2);
-                _fighter1.GetHeal();
+                _clients.Add(new Client(_random));
+                _haveClient = true;
             }
+        }
+
+        public void ShowDetailsInStorage()
+        {
+            Console.WriteLine("На складе лежат: ");
+            _storage.ShowAllDetails();
             Console.ReadKey();
         }
 
-        public void SelectFighter()
+        public void ChangeDetail()
         {
-            FightersChoisen = false;
-            while (!FightersChoisen)
+            int numberDetail = GetNumber() - 1;
+        }
+
+        public void ShowBreakDown()
+        {
+            if (_haveClient)
+                _clients.Last().ShowInfo();
+            else
+                Console.WriteLine("Сначала запустите клиента");
+        }
+
+        public int PayForDetail(int price)
+        {
+            Money -= price;
+            return price;
+        }
+
+        private void PayPenalty()
+        {
+            Money -= _penalty;
+        }
+
+        private void PayPenalty(Client client)
+        {
+            client.ReceiveCompensation(_totalPrice);
+            Money -= _totalPrice;
+        }
+        private int GetNumber()
+        {
+            string userInput = Console.ReadLine();
+            bool successCount = int.TryParse(userInput, out int result);
+            if (successCount)
             {
-                Console.Clear();
-                ShowAllFighters();
-                Console.WriteLine("Введите номер бойца 1: ");
-                _fighter1 = GetFighter(GetNumber());
-                Console.WriteLine("Введите номер бойца 2: ");
-                _fighter2 = GetFighter(GetNumber());
-                ShowInfo();
-                Console.ReadKey();
-                if (_fighter1 != null && _fighter2 != null)
-                    FightersChoisen = true;
+                return result;
+            }
+            else
+            {
+                Console.WriteLine("Неправильный ввод, попробуйте заново.");
+                return 0;
+            }
+        }
+
+    }
+
+    class Storage
+    {
+        private List<Details> _details;
+        private Random _random;
+
+        public Storage()
+        {
+            _random = new Random();
+            _details = new List<Details>();
+        }
+
+
+        public Details GetDetail(int number)
+        {
+            return _details.ElementAt(number);
+        }
+
+        public void AddDetail(int number, int cost)
+        {
+            _details.Add(new Details(number, cost)) ;
+        }
+
+        public void ShowAllDetails()
+        {
+            for (int i = 0; i < _details.Count; i++)
+            {
+                Console.Write(i + 1 + ". ");
+                _details[i].ShowInfo();
+            }
+        }
+        private void RemoveDetail(int number)
+        {
+            _details.RemoveAt(number);
+        }
+    }
+
+    class Shop
+    {
+        private List<Details> _details;
+        private int _money;
+        private Random _random;
+
+        public Shop(Random random)
+        {
+            _random = random;
+            _details = new List<Details>();
+            FillTheShop();
+        }
+
+        public void MakeDeal(CarServise carServise, Storage storage)
+        {
+            ShowAssortment();
+            Console.WriteLine("Введите номер детали: ");
+            int numberDetail = GetNumber()-1;
+            if (CheckSolvency(carServise, numberDetail))
+            {
+                Console.WriteLine("поздравляю с покупкой!");
+                _money += carServise.PayForDetail(_details[numberDetail].Cost);
+                storage.AddDetail(numberDetail, _details[numberDetail].Cost);
+            }
+            else
+            {
+                Console.WriteLine("Неудалось купить деталь");
+            }
+        }
+
+        private bool CheckSolvency(CarServise carServise, int numberDetail)
+        {
+            if (numberDetail >= 0 && numberDetail < Enum.GetValues(typeof(NameDetails)).Length)
+            {
+                if (carServise.Money >= _details[numberDetail].Cost)
+                    return true;
                 else
-                    FightersChoisen = false;
-            }
-        }
-
-        private void ShowInfo()
-        {
-            if (_fighter1 != null)
-                Console.Write("Боец номер 1:" + _fighter1.Name);
-            else
-                Console.Write("Боец номер 1: не выбран");
-            if (_fighter2 != null)
-                Console.Write("\nБоец номер 2:" + _fighter2.Name);
-            else
-                Console.Write("\nБоец номер 2: не выбран");
-        }
-
-        private void ShowAllFighters()
-        {
-            for (int i = 0; i < _warriors.Count; i++)
-            {
-                Console.WriteLine(i + 1 + " - " + _warriors[i].Name); ;
-            }
-        }
-
-        private Warrior GetFighter(int userInput)
-        {
-            if (userInput - 1 < _warriors.Count && userInput - 1 >= 0)
-            {
-                if (_warriors[userInput-1] != _fighter1)
-                {
-                    return _warriors[userInput - 1];
-                }
-                else
-                {
-                    Console.WriteLine("Такой боец уже выбран, попробуйте заново");
-                    _fighter1 = null;
-                    _fighter2 = null;
-                    return null;
-                }
+                    return false;
             }
             else
             {
-                Console.WriteLine("Бойца под таким номером нет");
-                return null;
+                return false;
+            }
+        }
+
+        private void ShowAssortment()
+        {
+            foreach (var detail in _details)
+            {
+                detail.ShowInfo();
+            }
+        }
+
+        private void FillTheShop()
+        {
+            int countName = Enum.GetValues(typeof(NameDetails)).Length;
+            for (int i = 0; i < countName; i++)
+            {
+                _details.Add(new Details(i, _random.Next(300, 601)));
             }
         }
 
@@ -162,178 +259,114 @@ namespace IJuniorDZ
                 return 0;
             }
         }
+
     }
 
-    abstract class Warrior
+    class Details
     {
-        private int _accuracy;
-        private int _costSpell;
-        private int _nativeHealth;
-        private Random rand;
+        private string _name;
+        private int _number;
 
-        public string Name { get; private set; }
-        public int Damage { get; private set; }
-        public int Health { get; private set; }
-        public int Energy { get; private set; }
+        public bool IsBroken { get; private set; }
+        public int Cost { get; private set; }
 
-        public Warrior(string name, int accuracy, int health, int energy, int damage, int costSpell)
+        public Details(int numberDetail, int cost)
         {
-            Name = name;
-            _accuracy = accuracy;
-            Health = health;
-            Energy = energy;
-            Damage = damage;
-            _costSpell = costSpell;
-            _nativeHealth = Health;
-            rand = new Random();
+            IsBroken = false;
+            Cost = cost;
+            _number = numberDetail;
+            _name = GetName(numberDetail);
         }
 
-        public void Attack(Warrior opponent)
+        public Details (int numberDetail)
         {
-            if (TryPunch() && TryUseEnergy())
+            IsBroken = false;
+            _name = GetName(numberDetail);
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"Деталь номер {_number+1}: {_name} стоимостью: {Cost}");
+        }
+
+        public void BrokeDetail()
+        {
+            IsBroken = true;
+        }
+
+        private string GetName(int number)
+        {
+            return Convert.ToString((NameDetails)number);
+        }
+    }
+
+    class Client
+    {
+        private int _money;
+        private int _numberBrokenDetail;
+        private List<Details> _car;
+
+        public Client(Random random)
+        {
+            _money = 1000;
+            _car = new List<Details>();
+            CreateCar(random);
+        }
+
+        public void ReplacementDetail(int numberDetail, Details detail)
+        {
+            if (numberDetail>=0 && numberDetail<Enum.GetValues(typeof(NameDetails)).Length)
             {
-                if (TryPunch())
-                    opponent.GetDamage(UseSpecialAbility());
+                _car.Insert(numberDetail,detail);
+                if (_car.ElementAt(_numberBrokenDetail).IsBroken)
+                {
+                    Console.WriteLine("Вы заменили не ту деталь. Клиент в ярости, а вы со штрафом!");
+                }
                 else
-                    opponent.GetDamage(TakeDamage());
-            }
-            else if (TryPunch())
-            {
-                opponent.GetDamage(TakeDamage());
+                {
+                    Console.WriteLine("Клиент уехал довольный! Хорошая работа!");
+                }
             }
             else
             {
-                Console.Write($"{Name} промахивается");
+                Console.WriteLine("Такой детали нет в машине");
             }
-
-            Console.WriteLine();
         }
 
-        public void GetHeal()
+        public void ReceiveCompensation(int money)
         {
-            Health = _nativeHealth;
+            _money += money;
         }
 
-        public void ShowHealth()
+        public int Pay(int cost)
         {
-            if (Health > _nativeHealth / 1.5)
-                Console.WriteLine($"Боец {Name} выглядит здоровым\n");
-            else if (Health > _nativeHealth / 2)
-                Console.WriteLine($"Боец {Name} ранен\n");
-            else if (Health > _nativeHealth / 5)
-                Console.WriteLine($"{Name} при смерти\n");
+            _money -= cost;
+            return cost;
         }
 
-        public virtual int TakeDamage()
+        public void ShowInfo()
         {
-            Console.Write($"{Name} бьет противника");
-            return Damage;
+            Console.WriteLine($"Клиент привез свою машину и говорит что у него сломано деталь номер: {_numberBrokenDetail+1} - {Convert.ToString((NameDetails)_numberBrokenDetail)}");
         }
 
-        public virtual void GetDamage(int damage)
+        private void CreateCar(Random random)
         {
-            Health -= damage;
-        }
-
-        public virtual int UseSpecialAbility()
-        {
-            return Damage * 2;
-        }
-
-        private bool TryPunch()
-        {
-            if (_accuracy * rand.Next(7, 21) > 60)
-                return true;
-            else
-                return false;
-        }
-
-        private bool TryUseEnergy()
-        {
-            if (Energy >= _costSpell)
-                return true;
-            else
-                return false;
-        }
-    }
-
-    class Mage : Warrior
-    {
-        public Mage(string name) : base(name, 5, 500, 500, 45, 150) { }
-
-        public override int UseSpecialAbility()
-        {
-            Console.Write("Маг кастует огнненный шар");
-            return base.Damage * 6;
-        }
-    }
-
-    class Paladin : Warrior
-    {
-        private int _armor;
-
-        public Paladin(string name) : base(name, 6, 1000, 300, 100, 100) { int _armor = 30; }
-
-        public override void GetDamage(int damage)
-        {
-            base.GetDamage(damage - _armor); ;
-        }
-
-        public override int UseSpecialAbility()
-        {
-            Console.Write("Паладин молится и восстанавливает себе здоровье");
-            GetDamage(-base.Damage);
-            return 0;
-        }
-    }
-
-    class Archer : Warrior
-    {
-        public Archer(string name) : base(name, 7, 600, 400, 70, 100) { }
-
-        public override int UseSpecialAbility()
-        {
-            Console.Write("Лучник выпускает сразу три стрелы");
-            return base.Damage * 3;
-        }
-    }
-
-    class Assasin : Warrior
-    {
-        public Assasin(string name) : base(name, 8, 500, 600, 90, 150) { }
-
-        public override int UseSpecialAbility()
-        {
-            Console.Write("Асасин оказыввается за спиной противника и наносит точный удар");
-            return base.Damage * 3;
-        }
-    }
-
-    class Berserk : Warrior
-    {
-        private bool inRage = false;
-
-        public Berserk(string name) : base(name, 5, 1200, 250, 110, 50) { }
-
-        public override int UseSpecialAbility()
-        {
-            Console.Write("Варвар жертвует своим здоровьем в обмен на увеличение урона");
-            GetDamage(base.Damage);
-            inRage = true;
-            return base.Damage;
-        }
-
-        public override int TakeDamage()
-        {
-            if (inRage)
+            int countName = Enum.GetValues(typeof(NameDetails)).Length;
+            for (int i = 0; i < countName; i++)
             {
-                inRage = false;
-                return base.TakeDamage() + this.Damage;
+                _car.Add(new Details(i));
             }
-            else
-            {
-                return base.TakeDamage();
-            }
+            _numberBrokenDetail = random.Next(0, countName);
+            _car.ElementAt(_numberBrokenDetail).BrokeDetail();
         }
+    }
+
+    enum NameDetails
+    {
+        Двигатель,
+        Корпус,
+        Трансмиссия,
+        Фары,
+        Тормоза
     }
 }
