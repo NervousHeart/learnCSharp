@@ -1,0 +1,87 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp5
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            bool isWork = true;
+            Jail jail = new Jail();
+
+            while (isWork)
+            {
+                Console.Clear();
+                Console.WriteLine("СЛАВЬСЯ АРСТОЦКА!. Великий Лидер решил провести амнистию для заключенных за преступление \"Антиправительственное\"" +
+                    " \n1. Провести амнистию политзаключеным \n2. выход");
+
+                Console.WriteLine("\n\nСписок заключенных: ");
+                jail.ShowInfo();
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        jail.Amnesty();
+                        break;
+                    case "2":
+                        isWork = false;
+                        break;
+                    default:
+                        break;
+                }
+                Console.ReadKey();
+            }
+        }
+    }
+
+    class Jail
+    {
+        private List<Criminal> _criminals;
+
+        public Jail()
+        {
+            _criminals = new List<Criminal>() { new Criminal("Джордж", "Антиправительственное"), new Criminal("Георгий", "Кража"), new Criminal("Маргарита", "Антиправительственное"),
+            new Criminal("Вера", "Мошшеничество"),new Criminal("Лидия", "Убийство"), new Criminal("Лукья", "Терроризм"), new Criminal("Павел", "Антиправительственное")};
+        }
+
+        public void ShowInfo()
+        {
+            foreach (var criminal in _criminals)
+            {
+                criminal.ShowInfo();
+            }
+        }
+
+        public void Amnesty()
+        {
+            Console.Clear();
+            var filtredCriminals = _criminals.Where(criminal => criminal.NameCrime != "Антиправительственное").ToList();
+            _criminals.Clear();
+            foreach (var criminal in filtredCriminals)
+            {
+                _criminals.Add(criminal);
+            }
+        }
+    }
+
+    class Criminal
+    {
+        private string _name;
+
+        public string NameCrime { get; private set; }
+
+        public Criminal(string name, string nameCrime)
+        {
+            _name = name;
+            NameCrime = nameCrime;
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"Имя: {_name}  Вид преступления: {NameCrime}");
+        }
+  }
+}
