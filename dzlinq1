@@ -1,0 +1,122 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp5
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Detective detective = new Detective();
+            bool isWork = true;
+
+            while (isWork)
+            {
+                Console.Clear();
+                Console.WriteLine("Здравствуйте, Детектив. \n1. Поиск подозреваемых \n2. Показ всех досье \n3. Выход");
+
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        detective.SearchSuspect();
+                        break;
+                    case "2":
+                        detective.ShowAllPeople();
+                        break;
+                    case "3":
+                        isWork = false;
+                        break;
+                    default:
+                        break;
+                }
+                Console.ReadKey();
+            }
+        }
+    }
+
+
+    class Detective
+    {
+        private List<People> _dossier;
+
+        public Detective()
+        {
+            _dossier = new List<People>() { new People("Jack", true, 180, 90, "USA"), new People("Boris", true,199,100,"Russian"),
+                new People("Angela", false,160,55,"Swede"), new People("Dmitrii", false, 176, 75,"Russian"), new People("Vera", false, 175,60,"Moldovan"),
+            new People("Bred", false,166,75,"Swede"), new People("Sergey", false, 155, 74,"Russian"), new People("Sara", false, 170,62,"Moldovan")};
+        }
+
+        public void SearchSuspect()
+        {
+            Console.WriteLine("Введите максимальный рост подозреваемого: ");
+            int height = GetNumber();
+            Console.WriteLine("Введите максимальный вес подозреваемого: ");
+            int weight = GetNumber();
+            Console.WriteLine("Введите национальность подозреваемого: ");
+            string nationality = Console.ReadLine().ToLower();
+
+            var filtredPeople = from People people in _dossier
+                                where people.Height < height
+                                where people.Weight < weight
+                                where people.Nationality.ToLower() == nationality
+                                where people.IsArest!=true
+                                select people;
+
+            Console.WriteLine("Список подозреваемых: ");
+            foreach (var people in filtredPeople)
+            {
+                people.ShowInfo();
+            }
+        }
+
+        public void ShowAllPeople()
+        {
+            foreach (var people in _dossier)
+            {
+                people.ShowInfo();
+            }
+        }
+
+        private int GetNumber()
+        {
+            string userInput = Console.ReadLine();
+            bool successCount = int.TryParse(userInput, out int result);
+            if (successCount)
+            {
+                return result;
+            }
+            else
+            {
+                Console.WriteLine("Неправильный ввод, попробуйте заново.");
+                return 0;
+            }
+        }
+    }
+
+    class People
+    {
+        private string _name;
+
+        public bool IsArest { get; private set; }
+        public int Height { get; private set; }
+        public int Weight { get; private set; }
+        public string Nationality { get; private set; }
+
+        public People(string name, bool isArest, int height, int weight, string nationality)
+        {
+            _name = name;
+            IsArest = isArest;
+            Height = height;
+            Weight = weight;
+            Nationality = nationality;
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"Имя: {_name}  Под стражей: {IsArest}  Рост: {Height}  Вес: {Weight}  Национальность: {Nationality}");
+        }
+  }
+}
