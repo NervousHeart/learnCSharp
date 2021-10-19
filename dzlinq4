@@ -1,0 +1,104 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp5
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            bool isWork = true;
+            Leaderboard leaderboard = new Leaderboard();
+
+            while (isWork)
+            {
+                Console.Clear();
+                Console.WriteLine("Доска почеты игры \"Сдохни ли умри\" \n1. Показать топ. \n2. Показать всех игроков. \n3. Выход.");
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        leaderboard.ShowTop();
+                        break;
+                    case "2":
+                        leaderboard.ShowAllPlayers();
+                        break;
+                    case "3":
+                        isWork = false;
+                        break;
+                    default:
+                        break;
+                }
+                Console.ReadKey();
+            }
+        }
+    }
+
+    class Leaderboard
+    {
+        private List<Player> _players;
+
+        public Leaderboard()
+        {
+            _players = new List<Player>() { new Player("ИззАда", 98, 9850), new Player("Леви", 42, 7900), new Player("ГортЕнзия", 14, 6200), new Player("АнглеСада", 90, 9900),
+            new Player("Дальтоник777", 11, 5120), new Player("Player4213", 99, 9999), new Player("Мясник", 71, 8700), new Player("Черепашка", 33, 7500), new Player("Крыса-сенсей", 43, 8000),
+            new Player("Черввячотебенадо", 86, 9010), new Player("МертВнутри", 79, 8100), new Player("Космический Трамвай", 9, 4215), new Player("Мяу-мяу", 5, 1920), new Player("Пчела", 1, 100), };
+        }
+
+        public void ShowTop()
+        {
+            SortTopLevel();
+            SortTopPowerful();
+        }
+
+        public void ShowAllPlayers()
+        {
+            foreach (var player in _players)
+            {
+                player.ShowInfo();
+            }
+        }
+
+        private void SortTopPowerful()
+        {
+            Console.WriteLine("Топ 3 игрока по силе");
+            var _playerPowerful = _players.OrderByDescending(player => player.Powerful).Take(3);
+            foreach (var player in _playerPowerful)
+            {
+                player.ShowInfo();
+            }
+        }
+
+        private void SortTopLevel()
+        {
+            Console.WriteLine("Топ 3 игрока по уровню\n");
+            var _playerLevel = _players.OrderByDescending(player => player.Level).Take(3);
+            foreach (var player in _playerLevel)
+            {
+                player.ShowInfo();
+            }
+        }
+    }
+
+    class Player
+    {
+        private string _nickname;
+
+        public int Level { get; private set; }
+        public int Powerful { get; private set; }
+
+        public Player (string name, int level, int powerful)
+        {
+            _nickname = name;
+            Level = level;
+            Powerful = powerful;
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"Играк: {_nickname} Уровень: {Level} Сила: {Powerful}");
+        }
+    }
+}
