@@ -1,0 +1,97 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp5
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Random random = new Random();
+            Client client = new Client(random);
+            client.ShowInfo();
+            Console.ReadKey();
+        }
+    }
+
+    class CarServise
+    {
+        private int _money;
+        
+    }
+
+    class Warehouse
+    {
+        private List<Details> _details;
+        private int _count;
+    }
+
+    class Details
+    {
+        private string _name;
+        private int _cost;
+        private bool isBroken;
+
+        public Details(int numberDetail)
+        {
+            isBroken = false;
+            _name = GetName(numberDetail);
+        }
+
+        public void BrokeDetail()
+        {
+            isBroken = true;
+        }
+
+        private string GetName(int number)
+        {
+            int countName = Enum.GetValues(typeof(NameDetails)).Length;
+            return Convert.ToString((NameDetails)number);
+        }
+
+    }
+
+    class Client
+    {
+        private int _money;
+        private int _numberBrokenDetail;
+        private List<Details> _car;
+
+        public Client(Random random)
+        {
+            _car = new List<Details>();
+            CreateCar(random);
+        }
+
+
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"Клиент привез свою машину и говорит что у него сломано: {Convert.ToString((NameDetails)_numberBrokenDetail)}");
+        }
+
+        private void CreateCar(Random random)
+        {
+            int countName = Enum.GetValues(typeof(NameDetails)).Length;
+            for (int i = 0; i < countName; i++)
+            {
+                _car.Add(new Details(i));
+            }
+            _numberBrokenDetail = random.Next(0, countName);
+            _car.ElementAt(_numberBrokenDetail).BrokeDetail();
+        }
+    }
+
+    enum NameDetails
+    {
+        Двигатель,
+        Корпус,
+        Трансмиссия,
+        Фары,
+        Тормоза
+    }
+
+}
