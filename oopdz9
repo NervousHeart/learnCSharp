@@ -39,33 +39,33 @@ namespace ConsoleApp5
 
     class Aquarium
     {
-        private List<Fish> _fishs;
+        private List<Fish> _fishes;
         private Random _random;
 
+        public int CountFish => _fishes.Count();
+
         public int MaxCountFish { get; private set; }
-        public int CountFish { get; private set; }
 
         public Aquarium(int maxCountFish)
         {
             MaxCountFish = maxCountFish;
-            _fishs = new List<Fish>();
+            _fishes = new List<Fish>();
             _random = new Random();
             Fill();
-            CountFish = _fishs.Count();
         }
-        
+
         public void SkipTime()
         {
             for (int i = 0; i < CountFish; i++)
             {
-                if (_fishs[i].Age > 5)
+                if (_fishes[i].Age > _fishes[i].Lifespan)
                 {
-                    _fishs.RemoveAt(i);
-                    CountFish--;
+                    _fishes.RemoveAt(i);
+                    i--;
                 }
                 else
                 {
-                    _fishs[i].ChangeAge();
+                    _fishes[i].SkipYear();
                 }
             }
         }
@@ -74,8 +74,7 @@ namespace ConsoleApp5
         {
             if (CountFish < MaxCountFish)
             {
-                _fishs.Add(new Fish(_random));
-                CountFish++;
+                _fishes.Add(new Fish(_random));
             }
             else
             {
@@ -86,7 +85,7 @@ namespace ConsoleApp5
 
         public void ShowInfo()
         {
-            foreach (var fish in _fishs)
+            foreach (var fish in _fishes)
             {
                 fish.ShowInfo();
             }
@@ -96,7 +95,7 @@ namespace ConsoleApp5
         {
             for (int i = 0; i < MaxCountFish; i++)
             {
-                _fishs.Add(new Fish(_random));
+                _fishes.Add(new Fish(_random));
             }
         }
     }
@@ -106,24 +105,26 @@ namespace ConsoleApp5
         private string _name;
         private Random _random;
 
+        public int Lifespan { get; private set; }
         public int Age { get; private set; }
 
         public Fish(Random random)
         {
+            Lifespan = 5;
             _random = random;
             _name = GetName();
-            Age = random.Next(1,5);
+            Age = random.Next(1, 5);
         }
 
         public void ShowInfo()
         {
-            if (Age>5)
+            if (Age > Lifespan)
                 Console.WriteLine($"{_name} погибла и отправилась в унитаз.");
             else
                 Console.WriteLine($"{_name} спокойно себе плавает. Её возраст: {Age}.");
         }
-        
-        public void ChangeAge()
+
+        public void SkipYear()
         {
             Age++;
         }
