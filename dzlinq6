@@ -1,0 +1,93 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp5
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            bool isWork = true;
+            Barrack barrack = new Barrack();
+            while (isWork)
+            {
+                Console.Clear();
+                Console.WriteLine("1. Показать всю информацию о бойцах \n2. Показать только имя и звание бойцов \n3. Выход");
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        barrack.ShowAllSoldiers();
+                        break;
+                    case "2":
+                        barrack.ShowOnlyNameAndRank();
+                        break;
+                    case "3":
+                        isWork = false;
+                        break;
+                    default:
+                        break;
+                }
+                Console.ReadKey();
+            }
+        }
+    }
+
+    class Barrack
+    {
+        private List<Soldier> _soldiers;
+
+        public Barrack()
+        { 
+            _soldiers = new List<Soldier>() { new Soldier("Джон","Автомат","Рядовой",10), new Soldier("Боб", "Винтовка", "Капрал", 18), new Soldier("Чак", "Базука", "Сержант", 14),
+            new Soldier("Брюс","Пистолет","Лейтенант",33), new Soldier("Том","Огнемет","Рядовой",8), new Soldier("Курт","Дробовик","Капрал",27), new Soldier("Макс","Автомат","Рядовой",3),
+            new Soldier("Шон","Автомат","Рядовой",4), new Soldier("Ларри","Сн. Винтовка","Ст. Капрал",22), new Soldier("Гарри","Пистолет","Сержант",17), new Soldier("Рон","Автомат","Рядовой",11)};
+        }
+
+        public void ShowAllSoldiers()
+        {
+            foreach (var soldier in _soldiers)
+            {
+                soldier.ShowInfo();
+            }
+        }
+
+        public void ShowOnlyNameAndRank()
+        {
+            var listSoldiers = from Soldier soldier in _soldiers
+                               select new
+                               {
+                                   name = soldier.Name,
+                                   rank = soldier.Rank
+                               };
+            foreach (var soldier in listSoldiers)
+            {
+                Console.WriteLine($"Солдат: {soldier.name} Звание: {soldier.rank}");
+            }
+        }
+    }
+
+    class Soldier
+    {
+        private string _armament;
+        private int _tour;
+
+        public string Name { get; private set; }
+        public string Rank { get; private set; }
+
+        public Soldier(string name, string armament, string rank, int tour)
+        {
+            Name = name;
+            _armament = armament;
+            Rank = rank;
+            _tour = tour;
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"Солдат: {Name} Вооружение: {_armament} Звание: {Rank} Время службы: {_tour} м.");
+        }
+    }
+}
