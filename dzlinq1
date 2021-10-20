@@ -80,16 +80,8 @@ namespace ConsoleApp5
         private int GetNumber()
         {
             string userInput = Console.ReadLine();
-            bool successCount = int.TryParse(userInput, out int result);
-            if (successCount)
-            {
-                return result;
-            }
-            else
-            {
-                Console.WriteLine("Неправильный ввод");
-                return default;
-            }
+            int.TryParse(userInput, out int result);
+            return result;
         }
     }
 
