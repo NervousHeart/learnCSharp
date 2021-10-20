@@ -1,0 +1,90 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp5
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            bool isWork = true;
+            SetStew setStew = new SetStew();
+            while (isWork)
+            {
+                Console.Clear();
+                Console.WriteLine("Вы получили гуманитарную помощь - тушенку! \n1. Проверить срок годности. \n2. Показать всю тушенку. \n3. Выход.");
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        setStew.CheckExpirationDate();
+                        break;
+                    case "2":
+                        setStew.ShowAllStews();
+                        break;
+                    case "3":
+                        isWork = false;
+                        break;
+                    default:
+                        break;
+                }
+                Console.ReadKey();
+            }
+        }
+    }
+
+    class SetStew
+    {
+        private List<Stew> _stews;
+
+        public SetStew()
+        {
+            _stews = new List<Stew>() { new Stew("Особая", 2010, 10), new Stew("Отборная", 1991, 15), new Stew("Мясная", 1960, 65), new Stew("Говядина 100%", 2018, 1), new Stew("Коровка", 2015, 5),
+            new Stew("Пастушка", 1920, 100), new Stew("Особая", 2011, 10), new Stew("Отборная", 1996, 15), new Stew("Мясная", 1949, 65), new Stew("Говядина 100%", 2019, 1), new Stew("Коровка", 2016, 5),
+            new Stew("Пасташку", 1922, 100), new Stew("Особая", 2012, 10), new Stew("Отборная", 2010, 15), new Stew("Мясная", 1948, 65), new Stew("Говядина 100%", 2020, 1), new Stew("Коровка", 2017, 5), };
+        }
+
+        public void CheckExpirationDate()
+        {
+            Console.WriteLine("Список просроченной тушенки: ");
+            int nowYear = DateTime.Now.Year;
+            var filtredExpirationDate = from Stew stew in _stews
+                                        where stew.ShelfLife < nowYear - stew.YearRelease
+                                        select stew;
+            foreach (var stew in filtredExpirationDate)
+            {
+                stew.ShowInfo();
+            }
+        }
+        
+        public void ShowAllStews()
+        {
+            foreach (var stew in _stews)
+            {
+                stew.ShowInfo();
+            }
+        }
+    }
+
+    class Stew
+    {
+        private string _name;
+
+        public int YearRelease { get; private set; }
+        public int ShelfLife { get; private set; }
+
+        public Stew(string name, int yearRelease, int shelLife)
+        {
+            _name = name;
+            YearRelease = yearRelease;
+            ShelfLife = shelLife;
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"Тушенка: {_name} Год выпуска: {YearRelease} Срок годности: {ShelfLife}");
+        }
+    }
+}
