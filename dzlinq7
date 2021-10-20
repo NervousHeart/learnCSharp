@@ -11,6 +11,7 @@ namespace ConsoleApp5
         static void Main(string[] args)
         {
             bool isWork = true;
+            Barrack barrack = new Barrack();
             while (isWork)
             {
                 Console.Clear();
@@ -19,8 +20,10 @@ namespace ConsoleApp5
                 switch (Console.ReadLine())
                 {
                     case "1":
+                        barrack.ShowAllSquad();
                         break;
                     case "2":
+                        barrack.TransferSoldier();
                         break;
                     case "3":
                         isWork = false;
@@ -42,7 +45,7 @@ namespace ConsoleApp5
         public Barrack()
         {
             _squad1 = new List<Soldier>() { new Soldier("Баранов Илья"), new Soldier("Баженов Евгений"), new Soldier("Кондаков Дитрий"), new Soldier("Чекан Павел"), new Soldier("Алиев Яхъя"),
-            new Soldier("Базаров Николай"), new Soldier("Усачев Виктор"), new Soldier("Беркут Александр"), new Soldier("Фримен Гордан"), new Soldier("Венкс Алекс"), new Soldier("Рейерс Ник"),
+            new Soldier("Азаров Николай"), new Soldier("Усачев Виктор"), new Soldier("Беркут Александр"), new Soldier("Фримен Гордан"), new Soldier("Венкс Алекс"), new Soldier("Рейерс Ник"),
             new Soldier("Котч Сален"), new Soldier("Пирс Эйден"), new Soldier("Леонис Кор"), new Soldier("Вурхез Джейсон"), new Soldier("Джойс Джек"), new Soldier("Снейк Солид"), };
 
             _squad2 = new List<Soldier>() { new Soldier("Миллер Джоуэл"), new Soldier("Уэйн Брюс"), new Soldier("Шепард Джек"), new Soldier("Скалетта Вито"), new Soldier("Девитт Букер"),
@@ -65,7 +68,7 @@ namespace ConsoleApp5
 
         public void TransferSoldier()
         {
-
+            _squad2 = _squad2.Union(_squad1.Where(soldier => soldier.Name.StartsWith("Б"))).ToList();
         }
     }
 
