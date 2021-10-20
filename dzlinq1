@@ -24,7 +24,7 @@ namespace ConsoleApp5
                         detective.SearchSuspect();
                         break;
                     case "2":
-                        detective.ShowAllPeople();
+                        detective.ShowAllPerson();
                         break;
                     case "3":
                         isWork = false;
@@ -40,13 +40,13 @@ namespace ConsoleApp5
 
     class Detective
     {
-        private List<People> _dossier;
+        private List<Person> _dossier;
 
         public Detective()
         {
-            _dossier = new List<People>() { new People("Jack", true, 180, 90, "USA"), new People("Boris", true,199,100,"Russian"),
-                new People("Angela", false,160,55,"Swede"), new People("Dmitrii", false, 176, 75,"Russian"), new People("Vera", false, 175,60,"Moldovan"),
-            new People("Bred", false,166,75,"Swede"), new People("Sergey", false, 155, 74,"Russian"), new People("Sara", false, 170,62,"Moldovan")};
+            _dossier = new List<Person>() { new Person("Jack", true, 180, 90, "USA"), new Person("Boris", true,199,100,"Russian"),
+                new Person("Angela", false,160,55,"Swede"), new Person("Dmitrii", false, 176, 75,"Russian"), new Person("Vera", false, 175,60,"Moldovan"),
+            new Person("Bred", false,166,75,"Swede"), new Person("Sergey", false, 155, 74,"Russian"), new Person("Sara", false, 170,62,"Moldovan")};
         }
 
         public void SearchSuspect()
@@ -58,25 +58,22 @@ namespace ConsoleApp5
             Console.WriteLine("Введите национальность подозреваемого: ");
             string nationality = Console.ReadLine().ToLower();
 
-            var filtredPeople = from People people in _dossier
-                                where people.Height < height
-                                where people.Weight < weight
-                                where people.Nationality.ToLower() == nationality
-                                where people.IsArest!=true
-                                select people;
+            var filtredPerson = from Person person in _dossier
+                                where person.Height < height && person.Weight < weight && person.Nationality.ToLower() == nationality && person.IsArest != true
+                                select person;
 
             Console.WriteLine("Список подозреваемых: ");
-            foreach (var people in filtredPeople)
+            foreach (var person in filtredPerson)
             {
-                people.ShowInfo();
+                person.ShowInfo();
             }
         }
 
-        public void ShowAllPeople()
+        public void ShowAllPerson()
         {
-            foreach (var people in _dossier)
+            foreach (var person in _dossier)
             {
-                people.ShowInfo();
+                person.ShowInfo();
             }
         }
 
@@ -90,13 +87,13 @@ namespace ConsoleApp5
             }
             else
             {
-                Console.WriteLine("Неправильный ввод, попробуйте заново.");
-                return 0;
+                Console.WriteLine("Неправильный ввод");
+                return default;
             }
         }
     }
 
-    class People
+    class Person
     {
         private string _name;
 
@@ -105,7 +102,7 @@ namespace ConsoleApp5
         public int Weight { get; private set; }
         public string Nationality { get; private set; }
 
-        public People(string name, bool isArest, int height, int weight, string nationality)
+        public Person(string name, bool isArest, int height, int weight, string nationality)
         {
             _name = name;
             IsArest = isArest;
@@ -118,5 +115,5 @@ namespace ConsoleApp5
         {
             Console.WriteLine($"Имя: {_name}  Под стражей: {IsArest}  Рост: {Height}  Вес: {Weight}  Национальность: {Nationality}");
         }
-  }
+    }
 }
