@@ -61,7 +61,7 @@ namespace ConsoleApp5
         private int _penalty;
         private int _priceOfWork;
 
-        public bool HaveClient { get; private set; }
+        public bool HaveClient => _client != null;
         public int Money { get; private set; }
 
         public CarServise()
@@ -70,7 +70,6 @@ namespace ConsoleApp5
             _random = new Random();
             _shop = new Shop(_random);
             _penalty = 200;
-            HaveClient = false;
             Money = 3000;
         }
 
@@ -82,19 +81,18 @@ namespace ConsoleApp5
                 int numberDetail = GetNumber() - 1;
                 _client.ReplaceDetail(numberDetail, _details[numberDetail]);
                 _details.RemoveAt(numberDetail);
-                if (_client.Diagnostics())
+                if (_client.CheckREpair())
                 {
                     Console.WriteLine("Вы заменили не ту деталь! Вам пришлось выплатить компенсацию клиенту.");
                     _client.ReceiveCompensation(Pay(_totalPrice));
                     _client = null;
-                    HaveClient = false;
                 }
                 else
                 {
                     Console.WriteLine("Вы удачно заменили деталь. Клиент отдал деньги и уехал счастливый.");
-                    Money += _client.Pay(_totalPrice);
+                    _client.Pay(_totalPrice);
+                    ReceiveMoney(_totalPrice);
                     _client = null;
-                    HaveClient = false;
                 }
             }
             else
@@ -102,7 +100,6 @@ namespace ConsoleApp5
                 Console.WriteLine($"У вас на складе нет подходящей детали. Клиент разочаровался и ушел, а вам выставили штраф {_penalty}");
                 Pay(_penalty);
                 _client = null;
-                HaveClient = false;
             }
         }
 
@@ -113,7 +110,6 @@ namespace ConsoleApp5
                 _client = new Client(_random);
                 _priceOfWork = _random.Next(100, 301);
                 _totalPrice = _shop.GetPriceDetail(_client.NumberBrokenDetail) + _priceOfWork;
-                HaveClient = true;
             }
             else
             {
@@ -144,7 +140,7 @@ namespace ConsoleApp5
                 if (_shop.GetPriceDetail(numberDetail) <= Money)
                 {
                     AddDetail(numberDetail);
-                    _shop.GetMoney(Pay(_shop.GetPriceDetail(numberDetail)));
+                    _shop.ReceiveMoney(Pay(_shop.GetPriceDetail(numberDetail)));
                     Console.WriteLine("Спасибо за покупку");
                 }
                 else
@@ -165,6 +161,11 @@ namespace ConsoleApp5
             {
                 Console.WriteLine(detail.ShowInfo());
             }
+        }
+
+        private void ReceiveMoney(int money)
+        {
+            Money += money;
         }
 
         private int GetNumber()
@@ -218,7 +219,7 @@ namespace ConsoleApp5
             FillShop();
         }
 
-        public void GetMoney(int money)
+        public void ReceiveMoney(int money)
         {
             _money += money;
         }
@@ -285,16 +286,12 @@ namespace ConsoleApp5
         private string GetName()
         {
             int countNameDetails = Enum.GetValues(typeof(NameDetails)).Length;
-            for (int i = 0; i < countNameDetails; i++)
+            if (Number >= 0 && Number < countNameDetails)
             {
-                if (Number == i)
-                {
-                    return Convert.ToString((NameDetails)Number);
-                }
+                return Convert.ToString((NameDetails)Number);
             }
             return null;
         }
-
     }
 
     class Client
@@ -303,7 +300,7 @@ namespace ConsoleApp5
         private int _money;
         private Random _random;
 
-        public int NumberBrokenDetail  {get; private set; }
+        public int NumberBrokenDetail { get; private set; }
 
         public Client(Random random)
         {
@@ -313,7 +310,7 @@ namespace ConsoleApp5
             CreateCar();
         }
 
-        public bool Diagnostics()
+        public bool CheckREpair()
         {
             for (int i = 0; i < _car.Count; i++)
             {
@@ -323,10 +320,9 @@ namespace ConsoleApp5
             return true;
         }
 
-        public int Pay(int money)
+        public void Pay(int totalPrice)
         {
-            _money -= money;
-            return money;
+            _money -= totalPrice;
         }
 
         public void ReceiveCompensation(int money)
@@ -359,10 +355,10 @@ namespace ConsoleApp5
 
     enum NameDetails
     {
-        Двигатель,
-        Корпус,
-        Трансмиссия,
-        Фары,
-        Тормоза
+        Engine,
+        BodyCar,
+        Transmission,
+        Headlights,
+        Brakes
     }
 }
