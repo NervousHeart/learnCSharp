@@ -49,10 +49,17 @@ namespace ConsoleApp5
 
         public void ShowTop()
         {
-            SortTopLevel();
-            SortTopPowerful();
+            ShowTopLevel();
+            ShowTopPower();
         }
 
+        public void ShowAllPlayers(List<Player> players)
+        {
+            foreach (var player in players)
+            {
+                player.ShowInfo();
+            }
+        }
         public void ShowAllPlayers()
         {
             foreach (var player in _players)
@@ -61,24 +68,18 @@ namespace ConsoleApp5
             }
         }
 
-        private void SortTopPowerful()
+        private void ShowTopPower()
         {
-            Console.WriteLine("Топ 3 игрока по силе");
-            var _playerPowerful = _players.OrderByDescending(player => player.Powerful).Take(3);
-            foreach (var player in _playerPowerful)
-            {
-                player.ShowInfo();
-            }
+            Console.WriteLine("\nТоп 3 игрока по силе:\n");
+            var topPlayersByPower = _players.OrderByDescending(player => player.Powerful).Take(3).ToList();
+            ShowAllPlayers(topPlayersByPower);
         }
 
-        private void SortTopLevel()
+        private void ShowTopLevel()
         {
-            Console.WriteLine("Топ 3 игрока по уровню\n");
-            var _playerLevel = _players.OrderByDescending(player => player.Level).Take(3);
-            foreach (var player in _playerLevel)
-            {
-                player.ShowInfo();
-            }
+            Console.WriteLine("\nТоп 3 игрока по уровню:\n");
+            var topPlayersByLevel = _players.OrderByDescending(player => player.Level).Take(3).ToList();
+            ShowAllPlayers(topPlayersByLevel);
         }
     }
 
@@ -89,7 +90,7 @@ namespace ConsoleApp5
         public int Level { get; private set; }
         public int Powerful { get; private set; }
 
-        public Player (string name, int level, int powerful)
+        public Player(string name, int level, int powerful)
         {
             _nickname = name;
             Level = level;
