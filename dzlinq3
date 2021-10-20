@@ -20,13 +20,13 @@ namespace ConsoleApp5
                 switch (Console.ReadLine())
                 {
                     case "1":
-                        hospital.SortName();
+                        hospital.ShowByName();
                         break;
                     case "2":
-                        hospital.SortAge();
+                        hospital.ShowByAge();
                         break;
                     case "3":
-                        hospital.SortDisease();
+                        hospital.SortByDisease();
                         break;
                     case "4":
                         isWork = false;
@@ -65,34 +65,36 @@ namespace ConsoleApp5
         public Hospital()
         {
             _ills = new List<Ill>() { new Ill("Дмитрий",25,"Простуда"), new Ill("Сергей", 18, "Перелом"), new Ill("Марина", 17, "Грипп"), new Ill("Владимир", 44, "Отравление"),
-                new Ill("Диана", 28, "Отравление"), new Ill("Екатерина", 40, "Грипп"), new Ill("Влад", 31, ""),new Ill("Любовь",24,"Грипп"), new Ill("Павел",55,"Грипп"), new Ill("Вера",26,"Шизофрения"),
+                new Ill("Диана", 28, "Отравление"), new Ill("Екатерина", 40, "Грипп"), new Ill("Влад", 31, "Симулянт"),new Ill("Любовь",24,"Грипп"), new Ill("Павел",55,"Грипп"), new Ill("Вера",26,"Шизофрения"),
                 new Ill("Николай",23,"Простуда"), new Ill("Максим",61,"Перелом"), new Ill("Ренат",19,"Грипп"), new Ill("Влада",19,"Шизофрения"), new Ill("Николь",22,"Грипп"), };
         }
 
-        public void SortName()
+        public void ShowByName()
         {
-            var filtredName = _ills.OrderBy(ill => ill.Name);
-            foreach (var ill in filtredName)
-            {
-                ill.ShowInfo();
-            }
+            _ills = _ills.OrderBy(ill => ill.Name).ToList();
+            ShowList();
         }
 
-        public void SortAge()
+        public void ShowByAge()
         {
-            var filtredName = _ills.OrderBy(ill => ill.Age);
-            foreach (var ill in filtredName)
-            {
-                ill.ShowInfo();
-            }
+            _ills = _ills.OrderBy(ill => ill.Age).ToList() ;
+            ShowList();
         }
 
-        public void SortDisease()
+        public void SortByDisease()
         {
             Console.WriteLine("Введите название болезни: ");
             string nameDisease = Console.ReadLine().ToLower();
-            var filtredName = _ills.Where(ill => ill.Disease.ToLower()==nameDisease);
-            foreach (var ill in filtredName)
+            var sortingIlls = _ills.Where(ill => ill.Disease.ToLower() == nameDisease).ToList();
+            foreach (var ill in sortingIlls)
+            {
+                ill.ShowInfo();
+            }
+        }
+
+        private void ShowList()
+        {
+            foreach (var ill in _ills)
             {
                 ill.ShowInfo();
             }
