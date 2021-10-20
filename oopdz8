@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,8 +37,8 @@ namespace ConsoleApp5
 
         public void ShowInfo()
         {
-            _squad1.ShowInfoLeft();
-            _squad2.ShowInfoRight(_squad2);
+            _squad1.ShowInfo();
+            _squad2.ShowInfo(Console.WindowWidth - 40);
         }
 
         public bool CanFight()
@@ -48,99 +49,80 @@ namespace ConsoleApp5
             }
             else
             {
-                if (_squad1.CanFight != true)
-                {
-                    Console.WriteLine("Команда 2 победила!");
-                    return false;
-                }
-                else if (_squad2.CanFight != true)
-                {
-                    Console.WriteLine("Команда 1 победила!");
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                return false;
             }
         }
 
         public void Fight()
         {
-            Console.Clear();
-            ShowInfo();
-            Console.WriteLine($"\n\n\n\n\n{_squad1.Name} команда атакует!");
-            _squad1.Attack(_squad2);
-            _squad2.DeliteCorpse();
-            _squad1.DeliteCorpse();
-            Console.ReadKey();
-            Console.Clear();
-            ShowInfo();
-            Console.WriteLine($"\n\n\n\n\n{_squad2.Name} команда атакует!");
-            _squad2.Attack(_squad1);
-            _squad1.DeliteCorpse();
-            _squad2.DeliteCorpse();
-            Console.ReadKey();
-            Console.Clear();
+            while (CanFight())
+            {
+                Console.Clear();
+                ShowInfo();
+                _squad1.Attack(_squad2);
+
+                ShowInfo();
+                _squad2.Attack(_squad1);
+                ShowWinner();
+            }
         }
 
-        private void SetCursourRight()
+        private void ShowWinner()
         {
-            Console.SetCursorPosition(Console.WindowWidth - 40, 7);
+            if (_squad1.CanFight != true)
+            {
+                Console.WriteLine("Команда 2 победила!");
+            }
+            else if (_squad2.CanFight != true)
+            {
+                Console.WriteLine("Команда 1 победила!");
+            }
         }
 
     }
 
     class Squad
     {
-        private int _countFighters;
         private List<Fighter> _fighters;
         private Random _random;
 
+        public int CountFighters { get; private set; }
         public string Name { get; private set; }
         public bool CanFight { get; private set; }
 
         public Squad(int countFighters, Random random, string name)
         {
             _random = random;
-            _countFighters = countFighters;
+            CountFighters = countFighters;
             _fighters = new List<Fighter>();
             CanFight = true;
             Name = name;
             Create();
         }
 
-        public void Attack(Squad squadOpponent)
+        public void Attack(Squad squad)
         {
-            if (squadOpponent._fighters.Count > 0 && _fighters.Count > 0)
+            Console.WriteLine($"\n\n\nКоманда {Name} атакует");
+            for (int i = 0; i < _fighters.Count; i++)
             {
-                for (int i = 0; i < _fighters.Count; i++)
+                DeleteCorpse();
+                squad.DeleteCorpse();
+                if (i < squad.CountFighters)
                 {
-                    int numberTarget = SearchTarget(squadOpponent);
-                    if (IsCommanderAlive())
-                    {
-                        squadOpponent._fighters[numberTarget].GetHit(_fighters[i].TakeDamage() + (_fighters[GetNumberCommander()] as Commander).AuraCommander());
-                    }
-                    else
-                    {
-                        squadOpponent._fighters[numberTarget].GetHit(_fighters[i].TakeDamage());
-                    }
+                    _fighters[SearchTarget()].TakeDamage(squad.Hit(i));
                 }
-                    if (IsMedicAlive())
-                    {
-                        int numberTarget = SearchWounded();
-                        (_fighters[GetNumberMedic()] as Medic).Hill(_fighters[numberTarget]);
-                    }
             }
-            else
+            if (IsMedicAlive())
             {
-                Console.WriteLine("Выживших не осталось.");
-                squadOpponent.CanFight = false;
+                int numberTarget = SearchWounded();
+                (_fighters[GetNumberMedic()] as Medic).Hill(_fighters[numberTarget]);
             }
+            CheckCanFight();
+            Console.ReadKey();
+            Console.Clear();
         }
 
-
-        public void ShowInfoLeft()
+        public void ShowInfo()
         {
             Console.WriteLine("Команда 1: ");
             foreach (var fighter in _fighters)
@@ -149,20 +131,27 @@ namespace ConsoleApp5
             }
         }
 
-        public void ShowInfoRight(Squad squad)
+        public void ShowInfo(int left)
         {
-            int left = Console.WindowWidth - 40;
             int top = 0;
             Console.SetCursorPosition(left, top++);
             Console.Write("Команда 2: ");
-            for (int i = 0; i < squad._fighters.Count; i++)
+            for (int i = 0; i < _fighters.Count; i++)
             {
                 Console.SetCursorPosition(left, top++);
-                squad._fighters[i].ShowInfo();
+                _fighters[i].ShowInfo();
             }
         }
 
-        public void DeliteCorpse()
+        public int Hit(int numberFighter)
+        {
+            if (IsCommanderAlive())
+                return _fighters[numberFighter].Damage + (_fighters[GetNumberCommander()] as Commander).AuraCommander;
+            else
+                return _fighters[numberFighter].Damage;
+        }
+
+        public void DeleteCorpse()
         {
             for (int i = 0; i < _fighters.Count; i++)
             {
@@ -170,6 +159,7 @@ namespace ConsoleApp5
                 {
                     _fighters.RemoveAt(i);
                     i--;
+                    CountFighters--;
                 }
             }
         }
@@ -218,9 +208,9 @@ namespace ConsoleApp5
             }
         }
 
-        private int SearchTarget(Squad squad)
+        private int SearchTarget()
         {
-            int numberTarget = _random.Next(0, squad._fighters.Count);
+            int numberTarget = _random.Next(0, _fighters.Count);
             return numberTarget;
         }
 
@@ -228,7 +218,7 @@ namespace ConsoleApp5
         {
             for (int i = 0; i < _fighters.Count; i++)
             {
-                if (_fighters[i].Health<_fighters[i].NativeHealth)
+                if (_fighters[i].Health < _fighters[i].NativeHealth)
                 {
                     return i;
                 }
@@ -236,11 +226,20 @@ namespace ConsoleApp5
             return 0;
         }
 
+        private void CheckCanFight()
+        {
+            if (_fighters.Count==0)
+            {
+                Console.WriteLine($"Команда {Name} проиграла");
+                CanFight = false;
+            }
+        }
+
         private void Create()
         {
             _fighters.Add(new Commander(GetName(), _random));
             _fighters.Add(new Medic(GetName(), _random));
-            for (int i = 0; i < _countFighters - 2; i++)
+            for (int i = 0; i < CountFighters - 2; i++)
             {
                 _fighters.Add(new Fighter(GetName(), _random));
             }
@@ -252,14 +251,13 @@ namespace ConsoleApp5
             string name = Convert.ToString((NameSquad)_random.Next(0, countName));
             return name;
         }
-
     }
 
     class Fighter
     {
-        private int _damage;
         private Random _random;
 
+        public int Damage { get; private set; }
         public string Name { get; private set; }
         public int Health { get; private set; }
         public int NativeHealth { get; private set; }
@@ -268,7 +266,7 @@ namespace ConsoleApp5
         {
             Name = name;
             _random = random;
-            _damage = _random.Next(20, 41);
+            Damage = _random.Next(20, 41);
             Health = _random.Next(100, 151);
             NativeHealth = Health;
         }
@@ -278,46 +276,38 @@ namespace ConsoleApp5
             Console.WriteLine($"{Name}. HP: {Health}/{NativeHealth}. {GetPost()}.");
         }
 
-        public int TakeDamage()
+        public void TakeDamage(int damage)
         {
-            Console.WriteLine($"\n{Name} стреляет на {_damage} урона.");
-            return _damage;
-        }
-
-        public void GetHit(int damage)
-        {
-            Console.WriteLine($"{Name} получил урон {damage}");
+            Console.WriteLine($"\n{Name} получает {Damage} урона.");
             Health -= damage;
         }
 
+        public void TakeHeal(int heal)
+        {
+            Health += heal;
+        }
         public virtual string GetPost()
         {
             return "Рядовой";
         }
-
     }
 
     class Commander : Fighter
     {
         private int _health;
-        private int _damageAura;
+
+        public int AuraCommander { get; private set; }
 
         public Commander(string name, Random random) : base(name, random)
         {
             _health = random.Next(75, 101);
-            _damageAura = random.Next(10, 31);
-        }
-
-        public int AuraCommander()
-        {
-            return _damageAura;
+            AuraCommander = random.Next(5, 21);
         }
 
         public override string GetPost()
         {
             return "Командир";
         }
-
     }
 
     class Medic : Fighter
@@ -330,17 +320,17 @@ namespace ConsoleApp5
             _hillPower = random.Next(50, 76);
         }
 
-        public int Hill(Fighter fighter)
+        public void Hill(Fighter fighter)
         {
             if (fighter.Health + _hillPower > fighter.NativeHealth)
             {
                 Console.WriteLine($"Медик лечит {fighter.Name} на {fighter.NativeHealth - fighter.Health}");
-                return fighter.NativeHealth - fighter.Health;
+                fighter.TakeHeal(fighter.NativeHealth - fighter.Health);
             }
-            else 
+            else
             {
                 Console.WriteLine($"Медик лечит {fighter.Name} на {_hillPower}");
-                return _hillPower;
+                fighter.TakeHeal(_hillPower);
             }
         }
 
@@ -348,7 +338,6 @@ namespace ConsoleApp5
         {
             return "Медик";
         }
-
     }
 
     enum NameSquad
