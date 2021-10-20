@@ -1,0 +1,86 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp5
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            bool isWork = true;
+            while (isWork)
+            {
+                Console.Clear();
+                Console.WriteLine("Вам приказано перевести всех солдат, у которых начинает фамилия на букву \"Б\" во второй отряд." +
+                    "\n1. Показать всех бойцов. \n2. Перевести солдат. \n3. Выход.");
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        break;
+                    case "2":
+                        break;
+                    case "3":
+                        isWork = false;
+                        break;
+                    default:
+                        break;
+                }
+                Console.ReadKey();
+            }
+        }
+    }
+
+    class Barrack
+    {
+        private List<Soldier> _squad1;
+        private List<Soldier> _squad2;
+
+
+        public Barrack()
+        {
+            _squad1 = new List<Soldier>() { new Soldier("Баранов Илья"), new Soldier("Баженов Евгений"), new Soldier("Кондаков Дитрий"), new Soldier("Чекан Павел"), new Soldier("Алиев Яхъя"),
+            new Soldier("Базаров Николай"), new Soldier("Усачев Виктор"), new Soldier("Беркут Александр"), new Soldier("Фримен Гордан"), new Soldier("Венкс Алекс"), new Soldier("Рейерс Ник"),
+            new Soldier("Котч Сален"), new Soldier("Пирс Эйден"), new Soldier("Леонис Кор"), new Soldier("Вурхез Джейсон"), new Soldier("Джойс Джек"), new Soldier("Снейк Солид"), };
+
+            _squad2 = new List<Soldier>() { new Soldier("Миллер Джоуэл"), new Soldier("Уэйн Брюс"), new Soldier("Шепард Джек"), new Soldier("Скалетта Вито"), new Soldier("Девитт Букер"),
+            new Soldier("Дженсен Адам"), new Soldier("Аттано Корво"), new Soldier("Клей Линкольн"), new Soldier("Дрейк Натан"), new Soldier("Марстон Джон"), new Soldier("Адлер Рейф"), };
+        }
+
+        public void ShowAllSquad()
+        {
+            Console.WriteLine("Отряд 1: ");
+            foreach (var soldier in _squad1)
+            {
+                soldier.ShowInfo();
+            }
+            Console.WriteLine("\nОтряд 2: ");
+            foreach (var soldier in _squad2)
+            {
+                soldier.ShowInfo();
+            }
+        }
+
+        public void TransferSoldier()
+        {
+
+        }
+    }
+
+    class Soldier
+    {
+        public string Name;
+
+        public Soldier(string name)
+        {
+            Name = name;
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"Солдат: {Name}");
+        }
+    }
+}
