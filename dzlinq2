@@ -13,27 +13,14 @@ namespace ConsoleApp5
             bool isWork = true;
             Jail jail = new Jail();
 
-            while (isWork)
-            {
                 Console.Clear();
-                Console.WriteLine("СЛАВЬСЯ АРСТОЦКА!. Великий Лидер решил провести амнистию для заключенных за преступление \"Антиправительственное\"" +
-                    " \n1. Провести амнистию политзаключеным \n2. выход");
+                Console.WriteLine("СЛАВЬСЯ АРСТОЦКА!. Великий Лидер решил провести амнистию для заключенных за преступление \"Антиправительственное\"");
 
-                Console.WriteLine("\n\nСписок заключенных: ");
+                Console.WriteLine("\nСписок заключенных: ");
                 jail.ShowInfo();
-                switch (Console.ReadLine())
-                {
-                    case "1":
-                        jail.Amnesty();
-                        break;
-                    case "2":
-                        isWork = false;
-                        break;
-                    default:
-                        break;
-                }
+                Console.WriteLine("\nСписок заключенных после амнистии: ");
+                jail.Amnesty();
                 Console.ReadKey();
-            }
         }
     }
 
@@ -57,12 +44,10 @@ namespace ConsoleApp5
 
         public void Amnesty()
         {
-            Console.Clear();
-            var filtredCriminals = _criminals.Where(criminal => criminal.NameCrime != "Антиправительственное").ToList();
-            _criminals.Clear();
-            foreach (var criminal in filtredCriminals)
+            _criminals = _criminals.Where(criminal => criminal.NameCrime != "Антиправительственное").ToList();
+            foreach (var criminal in _criminals)
             {
-                _criminals.Add(criminal);
+                criminal.ShowInfo();
             }
         }
     }
@@ -83,5 +68,5 @@ namespace ConsoleApp5
         {
             Console.WriteLine($"Имя: {_name}  Вид преступления: {NameCrime}");
         }
-  }
+    }
 }
