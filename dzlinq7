@@ -20,10 +20,10 @@ namespace ConsoleApp5
                 switch (Console.ReadLine())
                 {
                     case "1":
-                        barrack.ShowAllSquad();
+                        barrack.ShowAllSquads();
                         break;
                     case "2":
-                        barrack.TransferSoldier();
+                        barrack.TransferSoldiers();
                         break;
                     case "3":
                         isWork = false;
@@ -52,24 +52,28 @@ namespace ConsoleApp5
             new Soldier("Дженсен Адам"), new Soldier("Аттано Корво"), new Soldier("Клей Линкольн"), new Soldier("Дрейк Натан"), new Soldier("Марстон Джон"), new Soldier("Адлер Рейф"), };
         }
 
-        public void ShowAllSquad()
+        public void ShowAllSquads()
         {
             Console.WriteLine("Отряд 1: ");
-            foreach (var soldier in _squad1)
-            {
-                soldier.ShowInfo();
-            }
+            ShowSquad(_squad1);
             Console.WriteLine("\nОтряд 2: ");
-            foreach (var soldier in _squad2)
+            ShowSquad(_squad2);
+        }
+
+        public void TransferSoldiers()
+        {
+            _squad2 = _squad2.Union(_squad1.Where(soldier => soldier.Name.StartsWith("Б"))).ToList();
+            _squad1 = _squad1.Where(soldier => soldier.Name.StartsWith("Б")!= true).ToList();
+        }
+
+        private void ShowSquad(List<Soldier> squad)
+        {
+            foreach (var soldier in squad)
             {
                 soldier.ShowInfo();
             }
         }
 
-        public void TransferSoldier()
-        {
-            _squad2 = _squad2.Union(_squad1.Where(soldier => soldier.Name.StartsWith("Б"))).ToList();
-        }
     }
 
     class Soldier
