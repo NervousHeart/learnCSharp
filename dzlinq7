@@ -54,20 +54,20 @@ namespace ConsoleApp5
 
         public void ShowAllSquads()
         {
-            Console.WriteLine("Отряд 1: ");
-            ShowSquad(_squad1);
-            Console.WriteLine("\nОтряд 2: ");
-            ShowSquad(_squad2);
+            ShowSquad(_squad1, 1);
+            ShowSquad(_squad2, 2);
         }
 
         public void TransferSoldiers()
         {
-            _squad2 = _squad2.Union(_squad1.Where(soldier => soldier.Name.StartsWith("Б"))).ToList();
-            _squad1 = _squad1.Where(soldier => soldier.Name.StartsWith("Б")!= true).ToList();
+            var listSoldiers = _squad1.Where(soldier => soldier.Name.StartsWith("Б"));
+            _squad2 = _squad2.Union(listSoldiers).ToList();
+            _squad1 = _squad1.Except(listSoldiers).ToList();
         }
 
-        private void ShowSquad(List<Soldier> squad)
+        private void ShowSquad(List<Soldier> squad, int numberSquad)
         {
+            Console.WriteLine($"\nОтряд {numberSquad} \n");
             foreach (var soldier in squad)
             {
                 soldier.ShowInfo();
