@@ -1,0 +1,19 @@
+class Program
+{
+    static void Main()
+    {
+        Random random = new Random();
+        int number = random.Next(1, 28);
+        int maxThreeDigit = 999;
+        int count = 0;
+
+        for (int i = 1; i < maxThreeDigit; i++)
+        {
+            if (number * i <999 & number * i >100)
+            {
+                count++;
+            }
+        }
+        Console.WriteLine(count);
+    }
+}
