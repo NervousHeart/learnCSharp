@@ -8,44 +8,52 @@ class Program
         int maxDeep = 0;
         int bracket = 0;
         int deep = 0;
-        bool correctString = false;
+        bool correctString = true;
 
-        for (int i = 0; i < text.Length; i++)
+        foreach (var symbol in text)
         {
-            if (text[i] == '(')
-            {
-                deep++;
-                bracket++;
-                maxDeep = deep;
-            }
-            else if (text[i] == ')' & text[i] !=0)
-            {
-                bracket--;
-                if (text[i-1] == '(')
-                {
-                    deep--;
-                }
-            }
-
-            if (bracket==0)
-            {
-                correctString = true;
-            }
-            else
+            if (symbol != '(' & symbol != ')')
             {
                 correctString = false;
             }
         }
-
-
-        if (correctString)
+        if (correctString != false)
         {
-            Console.WriteLine($"Строка {text} корректна и имеет максимальную глубину = {maxDeep}");
-        }
-        else
-        {
-            Console.WriteLine($"Строка {text} неккоректна");
-        }
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i] == '(')
+                {
+                    deep++;
+                    bracket++;
+                    maxDeep = deep;
+                }
+                else if (text[i] == ')' & text[i] != 0)
+                {
+                    bracket--;
+                    if (text[i - 1] == '(')
+                    {
+                        deep--;
+                    }
+                }
 
+                if (bracket == 0)
+                {
+                    correctString = true;
+                }
+                else
+                {
+                    correctString = false;
+                }
+            }
+
+            if (correctString)
+            {
+                Console.WriteLine($"Строка {text} корректна и имеет максимальную глубину = {maxDeep}");
+            }
+            else
+            {
+                Console.WriteLine($"Строка {text} неккоректна");
+            }
+        }
     }
 }
