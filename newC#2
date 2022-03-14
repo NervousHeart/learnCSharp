@@ -5,10 +5,12 @@ class Program
         Random random = new Random();
         int number = random.Next(0, 101);
         int sum = 0;
+        int multipleOne = 3;
+        int multipleTwo = 5;
 
         for (int i = 0; i < number; i++)
         {
-            if (i % 3 == 0 | i % 5 == 0)
+            if (i % multipleOne == 0 | i % multipleTwo == 0)
             {
                 sum += i;
             }
