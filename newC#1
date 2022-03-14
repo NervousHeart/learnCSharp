@@ -1,0 +1,10 @@
+string name = "Kudryashov";
+string surname = "Dmitrii";
+string temp;
+
+temp = name;
+name = surname;
+surname = temp;
+
+Console.WriteLine(name + " " + surname);
+
