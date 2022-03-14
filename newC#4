@@ -1,0 +1,25 @@
+class Program
+{
+    static void Main()
+    {
+        Random random = new Random();
+        int number = random.Next(0, 101);
+        int value = 2;
+        int result = 1;
+        int power = 0;
+
+        for (int i = 1; i < number; i++)
+        {
+            if (power < i)
+            {
+                result *= value;
+                if (result > number)
+                {
+                    power = i;
+                    Console.WriteLine($"2 в степени {power} = {result} больше зданного числа {number}");
+                    break;
+                }
+            }
+        }
+    }
+}
