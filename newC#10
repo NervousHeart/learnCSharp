@@ -1,0 +1,33 @@
+class Program
+{
+    static void Main()
+    {
+        string[] text1 = { "Здравствуйте", "Привет", "Андрей", "Андрей" };
+        string[] text2 = { "Андрей", "Василий", "Привет" };
+
+        List<string> unionText = new List<string>();
+        unionText.AddRange(text1);
+        unionText.AddRange(text2);
+
+        unionText = DeleteDuplicate(unionText);
+
+        foreach (var word in unionText)
+        {
+            Console.WriteLine(word);
+        }
+    }
+
+    private static List<string> DeleteDuplicate(List<string> text)
+    {
+        List<string> resultList = new List<string>();
+
+        for (int i = 0; i < text.Count; i++)
+        {
+            if (resultList.Contains(text[i]) != true)
+            {
+                resultList.Add(text[i]);
+            }
+        }
+        return resultList;
+    }
+}
