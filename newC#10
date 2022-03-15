@@ -19,15 +19,16 @@ class Program
 
     private static List<string> DeleteDuplicate(List<string> text)
     {
-        List<string> resultList = new List<string>();
+
 
         for (int i = 0; i < text.Count; i++)
         {
-            if (resultList.Contains(text[i]) != true)
+            if (i != text.LastIndexOf(text[i]))
             {
-                resultList.Add(text[i]);
+                text.RemoveAt(i);
+                i = 0;
             }
         }
-        return resultList;
+        return text;
     }
 }
