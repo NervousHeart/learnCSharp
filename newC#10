@@ -9,7 +9,7 @@ class Program
         unionText.AddRange(text1);
         unionText.AddRange(text2);
 
-        unionText = DeleteDuplicate(unionText);
+        DeleteDuplicate(unionText);
 
         foreach (var word in unionText)
         {
@@ -17,7 +17,7 @@ class Program
         }
     }
 
-    private static List<string> DeleteDuplicate(List<string> text)
+    private static void DeleteDuplicate(List<string> text)
     {
 
 
@@ -29,6 +29,5 @@ class Program
                 i = 0;
             }
         }
-        return text;
     }
 }
