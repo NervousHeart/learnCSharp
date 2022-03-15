@@ -1,0 +1,19 @@
+class Program
+{
+    static void Main()
+    {
+        string text;
+        string[] arrayWords;
+        Console.WriteLine("Введите строку текста.");
+        text = Console.ReadLine();
+
+        if (text != null)
+        {
+            arrayWords = text.Split(' ');
+            foreach (var word in arrayWords)
+            {
+                Console.WriteLine(word);
+            }
+        }
+    }
+}
