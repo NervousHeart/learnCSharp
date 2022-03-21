@@ -1,0 +1,155 @@
+class Program
+{
+    static void Main()
+    {
+        Player player = new Player();
+        bool isWork = true;
+
+        while (isWork)
+        {
+            Console.WriteLine("Нажмите \"1\" чтобы взять карту. Нажмите \"5\", чтобы выйти");
+
+            switch (Console.ReadLine())
+            {
+                case "1":
+                    player.TakeCard();
+                    break;
+                case "5":
+                    isWork = false;
+                    break;
+                default:
+                    Console.WriteLine("Неправильный ввод.");
+                    break;
+            }
+        }
+    }
+}
+
+class Card
+{
+    private string _suit;
+    private string _name;
+    private int _valueModifier;
+
+    public int Value { get; private set; }
+    public Card(int numberOfSuit, int numberOfCard)
+    {
+        _valueModifier = 2;
+        _suit = Enum.GetName(typeof(Suit), numberOfSuit);
+        _name = Enum.GetName(typeof(NameCards), numberOfCard);
+        Value = (int)Enum.GetValues(typeof(NameCards)).GetValue(numberOfCard) + _valueModifier;
+    }
+
+    public void ShowInfo()
+    {
+        Console.WriteLine($"Карта: {_suit} {_name} со значением {Value}");
+    }
+}
+
+class Pack
+{
+    private List<Card> _packOfCards;
+    private Random _rand;
+
+    public Pack()
+    {
+        _rand = new Random();
+        _packOfCards = new List<Card>();
+        CreatePack();
+        ShufflePack();
+    }
+
+    private void CreatePack()
+    {
+        int lengthtSuits = Enum.GetNames(typeof(Suit)).Length;
+        int lengthtCountCards = Enum.GetNames(typeof(NameCards)).Length;
+
+        for (int i = 0; i < lengthtSuits; i++)
+        {
+            for (int j = 0; j < lengthtCountCards; j++)
+            {
+                _packOfCards.Add(new Card(i, j));
+            }
+        }
+    }
+
+    private void ShufflePack()
+    {
+        for (int i = _packOfCards.Count() - 1; i >= 1; i--)
+        {
+            int j = _rand.Next(i + 1);
+            Card temp = _packOfCards[j];
+            _packOfCards[j] = _packOfCards[i];
+            _packOfCards[i] = temp;
+        }
+    }
+
+    public Card GetCard()
+    {
+        if (_packOfCards.Count > 0)
+        {
+            Card getCard = _packOfCards.First();
+            _packOfCards.Remove(_packOfCards.First());
+            return getCard;
+        }
+        else
+        {
+            Console.Clear();
+            Console.WriteLine("Колода пуста");
+            Console.ReadKey();
+            return null;
+        }
+    }
+
+}
+
+class Player
+{
+    private Pack _gamePack;
+    private List<Card> _handPack;
+
+    public Player()
+    {
+        _gamePack = new Pack();
+        _handPack = new List<Card>();
+    }
+
+    private void ShowCards()
+    {
+        foreach (var card in _handPack)
+        {
+            card.ShowInfo();
+        }
+    }
+    public void TakeCard()
+    {
+        Console.Clear();
+        _handPack.Add(_gamePack.GetCard());
+        if (_handPack.Last() == null)
+        {
+            _handPack.Remove(_handPack.Last());
+        }
+        ShowCards();
+    }
+}
+
+enum Suit
+{
+    Spades,
+    Hearts,
+    Diomonds,
+    Clubs
+}
+
+enum NameCards
+{
+    JackOfKnave,
+    Queen,
+    King,
+    Ace,
+    Six,
+    Seven,
+    Eight,
+    Nine,
+    Ten
+}
