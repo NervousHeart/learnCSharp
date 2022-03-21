@@ -12,26 +12,18 @@ class Program
             switch (Console.ReadLine())
             {
                 case "1":
-                    Console.WriteLine("Введите название книги: ");
-                    string bookName = Console.ReadLine();
-                    Console.WriteLine("Введите автора книги: ");
-                    string authorName = Console.ReadLine();
-                    Console.WriteLine("Введите год: ");
-                    int date = GetNumber();
-                    bookStorage.AddBook(bookName, authorName, date);
+                    bookStorage.AddBook();
                     break;
                 case "2":
                     bookStorage.ShowInfo();
                     break;
                 case "3":
-                    Console.WriteLine("Введите год: ");
                     bookStorage.ShowInfo(GetNumber());
                     break;
                 case "4":
                     bookStorage.ShowInfo(Console.ReadLine());
                     break;
                 case "5":
-                    Console.WriteLine("Введите номер книги: ");
                     bookStorage.DeliteBook(GetNumber());
                     break;
                 case "6":
@@ -47,6 +39,7 @@ class Program
     }
     static int GetNumber()
     {
+        Console.WriteLine("Введите число: ");
         string userInput = Console.ReadLine();
         bool successCount = int.TryParse(userInput, out int result);
         if (successCount)
@@ -79,8 +72,24 @@ class Book
 
 class BookStorage
 {
-    private List<Book> books = new List<Book>();
+    private List<Book> books;
 
+    public BookStorage()
+    {
+        books = new List<Book>();
+    }
+    private int GetNumber()
+    {
+        string userInput = Console.ReadLine();
+        bool successCount = int.TryParse(userInput, out int result);
+        if (successCount)
+            return result;
+        else
+        {
+            Console.WriteLine("Неправильный ввод, попробуйте заново.");
+            return 0;
+        }
+    }
     private void SearchBook(bool condition)
     {
         for (int i = 0; i < books.Count; i++)
@@ -114,9 +123,15 @@ class BookStorage
             }
         }
     }
-    public void AddBook(string name, string author, int date)
+    public void AddBook()
     {
-        books.Add(new Book(name, author, date));
+        Console.WriteLine("Введите название книги: ");
+        string bookName = Console.ReadLine();
+        Console.WriteLine("Введите автора книги: ");
+        string authorName = Console.ReadLine();
+        Console.WriteLine("Введите год: ");
+        int date = GetNumber();
+        books.Add(new Book(bookName, authorName, date));
     }
     public void ShowInfo()
     {
