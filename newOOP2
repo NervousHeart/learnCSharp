@@ -72,11 +72,11 @@ class Book
 
 class BookStorage
 {
-    private List<Book> books;
+    private List<Book> _books;
 
     public BookStorage()
     {
-        books = new List<Book>();
+        _books = new List<Book>();
     }
     private int GetNumber()
     {
@@ -92,7 +92,7 @@ class BookStorage
     }
     private void SearchBook(bool condition)
     {
-        for (int i = 0; i < books.Count; i++)
+        for (int i = 0; i < _books.Count; i++)
         {
             int temp = 0;
             temp++;
@@ -100,9 +100,9 @@ class BookStorage
             {
                 temp--;
                 Console.Write(i + " ");
-                books[i].ShowInfo();
+                _books[i].ShowInfo();
             }
-            else if (temp == books.Count - 1)
+            else if (temp == _books.Count - 1)
             {
                 Console.WriteLine("Таких книг нет");
             }
@@ -111,11 +111,11 @@ class BookStorage
 
     public void DeliteBook(int number)
     {
-        for (int i = 0; i < books.Count; i++)
+        for (int i = 0; i < _books.Count; i++)
         {
             if (i == number)
             {
-                books.RemoveAt(i);
+                _books.RemoveAt(i);
             }
             else
             {
@@ -131,28 +131,28 @@ class BookStorage
         string authorName = Console.ReadLine();
         Console.WriteLine("Введите год: ");
         int date = GetNumber();
-        books.Add(new Book(bookName, authorName, date));
+        _books.Add(new Book(bookName, authorName, date));
     }
     public void ShowInfo()
     {
-        for (int i = 0; i < books.Count; i++)
+        for (int i = 0; i < _books.Count; i++)
         {
             Console.Write(i + " ");
-            books[i].ShowInfo();
+            _books[i].ShowInfo();
         }
     }
     public void ShowInfo(int date)
     {
-        for (int i = 0; i < books.Count; i++)
+        for (int i = 0; i < _books.Count; i++)
         {
-            SearchBook(books[i].Date == date);
+            SearchBook(_books[i].Date == date);
         }
     }
     public void ShowInfo(string authorOrName)
     {
-        for (int i = 0; i < books.Count; i++)
+        for (int i = 0; i < _books.Count; i++)
         {
-            SearchBook(books[i].Author.ToLower() == authorOrName.ToLower() || books[i].Name.ToLower() == authorOrName.ToLower());
+            SearchBook(_books[i].Author.ToLower() == authorOrName.ToLower() || _books[i].Name.ToLower() == authorOrName.ToLower());
         }
     }
 }
