@@ -49,11 +49,11 @@ class Card
 class Pack
 {
     private List<Card> _packOfCards;
-    private Random _rand;
+    private Random _random;
 
     public Pack()
     {
-        _rand = new Random();
+        _random = new Random();
         _packOfCards = new List<Card>();
         CreatePack();
         ShufflePack();
@@ -77,9 +77,9 @@ class Pack
     {
         for (int i = _packOfCards.Count() - 1; i >= 1; i--)
         {
-            int j = _rand.Next(i + 1);
-            Card temp = _packOfCards[j];
-            _packOfCards[j] = _packOfCards[i];
+            int randomIndex = _random.Next(i + 1);
+            Card temp = _packOfCards[randomIndex];
+            _packOfCards[randomIndex] = _packOfCards[i];
             _packOfCards[i] = temp;
         }
     }
