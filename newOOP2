@@ -1,0 +1,143 @@
+class Program
+{
+    static void Main()
+    {
+        BookStorage bookStorage = new BookStorage();
+        bool isWork = true;
+
+        while (isWork)
+        {
+            Console.WriteLine($"Нажмите \"1\", чтобы добавить книгу. \nНажмите \"2\", чтобы посмотреть все книги. \nНажмите \"3\", чтобы искать книги по году выпуска." +
+                "\nНажмите \"4\", чтобы искать книгу по названию/автору. \nНажмите \"5\", чтобы убрать книгу. \nНажмите \"6\", чтобы выйти.");
+            switch (Console.ReadLine())
+            {
+                case "1":
+                    Console.WriteLine("Введите название книги: ");
+                    string bookName = Console.ReadLine();
+                    Console.WriteLine("Введите автора книги: ");
+                    string authorName = Console.ReadLine();
+                    Console.WriteLine("Введите год: ");
+                    int date = GetNumber();
+                    bookStorage.AddBook(bookName, authorName, date);
+                    break;
+                case "2":
+                    bookStorage.ShowInfo();
+                    break;
+                case "3":
+                    Console.WriteLine("Введите год: ");
+                    bookStorage.ShowInfo(GetNumber());
+                    break;
+                case "4":
+                    bookStorage.ShowInfo(Console.ReadLine());
+                    break;
+                case "5":
+                    Console.WriteLine("Введите номер книги: ");
+                    bookStorage.DeliteBook(GetNumber());
+                    break;
+                case "6":
+                    isWork = false;
+                    break;
+                default:
+                    Console.WriteLine("Неправильный ввод");
+                    break;
+            }
+            Console.ReadKey();
+            Console.Clear();
+        }
+    }
+    static int GetNumber()
+    {
+        string userInput = Console.ReadLine();
+        bool successCount = int.TryParse(userInput, out int result);
+        if (successCount)
+            return result;
+        else
+        {
+            Console.WriteLine("Неправильный ввод, попробуйте заново.");
+            return 0;
+        }
+    }
+}
+
+class Book
+{
+    public string Name { get; private set; }
+    public string Author { get; private set; }
+    public int Date { get; private set; }
+
+    public Book(string name, string author, int date)
+    {
+        Name = name;
+        Author = author;
+        Date = date;
+    }
+    public void ShowInfo()
+    {
+        Console.WriteLine($"Книга автора: {Author} под названием: {Name} - {Date} года выпуска");
+    }
+}
+
+class BookStorage
+{
+    private List<Book> books = new List<Book>();
+
+    private void SearchBook(bool condition)
+    {
+        for (int i = 0; i < books.Count; i++)
+        {
+            int temp = 0;
+            temp++;
+            if (condition)
+            {
+                temp--;
+                Console.Write(i + " ");
+                books[i].ShowInfo();
+            }
+            else if (temp == books.Count - 1)
+            {
+                Console.WriteLine("Таких книг нет");
+            }
+        }
+    }
+
+    public void DeliteBook(int number)
+    {
+        for (int i = 0; i < books.Count; i++)
+        {
+            if (i == number)
+            {
+                books.RemoveAt(i);
+            }
+            else
+            {
+                Console.WriteLine("Книги под таким номером нет.");
+            }
+        }
+    }
+    public void AddBook(string name, string author, int date)
+    {
+        books.Add(new Book(name, author, date));
+    }
+    public void ShowInfo()
+    {
+        for (int i = 0; i < books.Count; i++)
+        {
+            Console.Write(i + " ");
+            books[i].ShowInfo();
+        }
+    }
+    public void ShowInfo(int date)
+    {
+        for (int i = 0; i < books.Count; i++)
+        {
+            SearchBook(books[i].Date == date);
+        }
+    }
+    public void ShowInfo(string authorOrName)
+    {
+        for (int i = 0; i < books.Count; i++)
+        {
+            SearchBook(books[i].Author.ToLower() == authorOrName.ToLower() || books[i].Name.ToLower() == authorOrName.ToLower());
+        }
+    }
+}
